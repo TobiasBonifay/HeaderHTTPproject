@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -72,24 +73,70 @@ namespace HeaderHTTPproject
                     var urls = form.Keys.Select(key => form[key]).ToList();
 
                     var httpClient = new HttpClient();
+                    var serverStats = new Dictionary<string, int>();
+                    int totalCount = 0;
 
                     foreach (var url in urls)
                     {
                         try
                         {
                             var response = await httpClient.GetAsync(url);
-                            await context.Response.WriteAsync($"Headers for {url}:\n");
+                            if (response.Headers.Contains("Server"))
+                            {
+                                var serverName = response.Headers.GetValues("Server").FirstOrDefault();
+                                if (!string.IsNullOrEmpty(serverName))
+                                {
+                                    totalCount++;
+                                    if (serverStats.ContainsKey(serverName))
+                                    {
+                                        serverStats[serverName]++;
+                                    }
+                                    else
+                                    {
+                                        serverStats[serverName] = 1;
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            // Ignore any exceptions for this example.
+                        }
+                    }
+
+                    await context.Response.WriteAsync("<html><body>");
+                    await context.Response.WriteAsync("<h3>Server Summary</h3>");
+                    await context.Response.WriteAsync("<table><thead><tr><th>Server</th><th>Count</th><th>Percentage</th></tr></thead><tbody>");
+
+                    foreach (var serverStat in serverStats)
+                    {
+                        double percentage = (double)serverStat.Value / totalCount * 100;
+                        await context.Response.WriteAsync($"<tr><td>{serverStat.Key}</td><td>{serverStat.Value}</td><td>{percentage:0.00}%</td></tr>");
+                    }
+
+                    await context.Response.WriteAsync("</tbody></table>");
+                    await context.Response.WriteAsync("<h3>Headers</h3>");
+
+                    foreach (var url in urls)
+                    {
+                        try
+                        {
+                            var response = await httpClient.GetAsync(url);
+                            await context.Response.WriteAsync($"<h4>Headers for {url}:</h4>");
+                            await context.Response.WriteAsync("<pre>");
                             foreach (var header in response.Headers)
                             {
                                 await context.Response.WriteAsync($"{header.Key}: {string.Join(", ", header.Value)}\n");
                             }
-                            await context.Response.WriteAsync("\n");
+                            await context.Response.WriteAsync("</pre>");
                         }
                         catch (Exception ex)
                         {
-                            await context.Response.WriteAsync($"Error fetching headers for {url}: {ex.Message}\n\n");
+                            await context.Response.WriteAsync($"<p>Error fetching headers for {url}: {ex.Message}</p>");
                         }
                     }
+
+                    await context.Response.WriteAsync("</body></html>");
                 });
             });
         }
