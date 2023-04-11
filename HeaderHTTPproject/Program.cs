@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -45,26 +45,81 @@ namespace HeaderHTTPproject
 
             app.UseEndpoints(endpoints =>
             {
+                string css = @"
+                    body {
+                        font-family: Arial, sans-serif;
+                        max-width: 800px;
+                        margin: 0 auto;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    th, td {
+                        border: 1px solid #ccc;
+                        padding: 8px;
+                        text-align: left;
+                    }
+                    th {
+                        background-color: #f2f2f2;
+                        font-weight: bold;
+                    }
+                    a {
+                        display: inline-block;
+                        margin-top: 20px;
+                        text-decoration: none;
+                        color: #0099ff;
+                        font-weight: bold;
+                    }";
+
+                string formHtml = @"
+                    <html>
+                        <head>
+                            <style>
+                                {0}
+                            </style>
+                        </head>
+                        <body>
+                            <form action=""/analyze"" method=""POST"">
+                                <label for=""url1"">URL 1:</label>
+                                <input type=""text"" id=""url1"" name=""url1"" required><br>
+                                <label for=""url2"">URL 2:</label>
+                                <input type=""text"" id=""url2"" name=""url2"" required><br>
+                                <label for=""url3"">URL 3:</label>
+                                <input type=""text"" id=""url3"" name=""url3"" required><br>
+                                <label for=""url4"">URL 4:</label>
+                                <input type=""text"" id=""url4"" name=""url4"" required><br>
+                                <label for=""url5"">URL 5:</label>
+                                <input type=""text"" id=""url5"" name=""url5"" required><br>
+                                <input type=""submit"" value=""Analyze"">
+                            </form>
+                        </body>
+                    </html>";
+
+                string resultsHtmlTemplate = @"
+                    <html>
+                        <head>
+                            <style>
+                                {0}
+                            </style>
+                        </head>
+                        <body>
+                            <h1>Web Server Analysis</h1>
+                            <table>
+                                <tr>
+                                    <th>Web Server</th>
+                                    <th>Count</th>
+                                    <th>Percentage</th>
+                                </tr>
+                                {1}
+                            </table>
+                            <a href=""/"">Analyze more URLs</a>
+                        </body>
+                    </html>";
+
                 endpoints.MapGet("/", async context =>
                 {
-                    await context.Response.WriteAsync(@"
-                        <html>
-                            <body>
-                                <form action=""/analyze"" method=""POST"">
-                                    <label for=""url1"">URL 1:</label>
-                                    <input type=""text"" id=""url1"" name=""url1"" required><br>
-                                    <label for=""url2"">URL 2:</label>
-                                    <input type=""text"" id=""url2"" name=""url2"" required><br>
-                                    <label for=""url3"">URL 3:</label>
-                                    <input type=""text"" id=""url3"" name=""url3"" required><br>
-                                    <label for=""url4"">URL 4:</label>
-                                    <input type=""text"" id=""url4"" name=""url4"" required><br>
-                                    <label for=""url5"">URL 5:</label>
-                                    <input type=""text"" id=""url5"" name=""url5"" required><br>
-                                    <input type=""submit"" value=""Analyze"">
-                                </form>
-                            </body>
-                        </html>");
+                    await context.Response.WriteAsync(string.Format(formHtml, css));
                 });
 
                 endpoints.MapPost("/analyze", async context =>
@@ -73,72 +128,40 @@ namespace HeaderHTTPproject
                     var urls = form.Keys.Select(key => form[key]).ToList();
 
                     var httpClient = new HttpClient();
-                    var serverStats = new Dictionary<string, int>();
-                    int totalCount = 0;
+                    Dictionary<string, int> serverCounts = new Dictionary<string, int>();
 
                     foreach (var url in urls)
                     {
                         try
                         {
                             var response = await httpClient.GetAsync(url);
-                            if (response.Headers.Contains("Server"))
+                            string server = response.Headers.Server.ToString();
+                            if (!serverCounts.ContainsKey(server))
                             {
-                                var serverName = response.Headers.GetValues("Server").FirstOrDefault();
-                                if (!string.IsNullOrEmpty(serverName))
-                                {
-                                    totalCount++;
-                                    if (serverStats.ContainsKey(serverName))
-                                    {
-                                        serverStats[serverName]++;
-                                    }
-                                    else
-                                    {
-                                        serverStats[serverName] = 1;
-                                    }
-                                }
+                                serverCounts[server] = 0;
                             }
-                        }
-                        catch (Exception)
-                        {
-                            // Ignore any exceptions for this example.
-                        }
-                    }
-
-                    await context.Response.WriteAsync("<html><body>");
-                    await context.Response.WriteAsync("<h3>Server Summary</h3>");
-                    await context.Response.WriteAsync("<table><thead><tr><th>Server</th><th>Count</th><th>Percentage</th></tr></thead><tbody>");
-
-                    foreach (var serverStat in serverStats)
-                    {
-                        double percentage = (double)serverStat.Value / totalCount * 100;
-                        await context.Response.WriteAsync($"<tr><td>{serverStat.Key}</td><td>{serverStat.Value}</td><td>{percentage:0.00}%</td></tr>");
-                    }
-
-                    await context.Response.WriteAsync("</tbody></table>");
-                    await context.Response.WriteAsync("<h3>Headers</h3>");
-
-                    foreach (var url in urls)
-                    {
-                        try
-                        {
-                            var response = await httpClient.GetAsync(url);
-                            await context.Response.WriteAsync($"<h4>Headers for {url}:</h4>");
-                            await context.Response.WriteAsync("<pre>");
-                            foreach (var header in response.Headers)
-                            {
-                                await context.Response.WriteAsync($"{header.Key}: {string.Join(", ", header.Value)}\n");
-                            }
-                            await context.Response.WriteAsync("</pre>");
+                            serverCounts[server]++;
                         }
                         catch (Exception ex)
                         {
-                            await context.Response.WriteAsync($"<p>Error fetching headers for {url}: {ex.Message}</p>");
+                            await context.Response.WriteAsync($"Error fetching headers for {url}: {ex.Message}\n\n");
                         }
                     }
 
-                    await context.Response.WriteAsync("</body></html>");
+                    double total = urls.Count;
+                    string resultsHtml = "";
+                    foreach (var serverCount in serverCounts)
+                    {
+                        string server = serverCount.Key;
+                        int count = serverCount.Value;
+                        double percentage = (count / total) * 100;
+                        resultsHtml += $"<tr><td>{server}</td><td>{count}</td><td>{percentage:N2}%</td></tr>";
+                    }
+
+                    await context.Response.WriteAsync(string.Format(resultsHtmlTemplate, css, resultsHtml));
                 });
             });
         }
     }
 }
+
