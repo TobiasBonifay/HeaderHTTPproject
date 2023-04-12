@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace HeaderHTTPproject
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRouting();
+            services.AddControllersWithViews();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -26,84 +28,14 @@ namespace HeaderHTTPproject
             }
 
             app.UseRouting();
+            app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
-                string css = @"
-                    body {
-                        font-family: Arial, sans-serif;
-                        max-width: 800px;
-                        margin: 0 auto;
-                    }
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                    }
-                    th, td {
-                        border: 1px solid #ccc;
-                        padding: 8px;
-                        text-align: left;
-                    }
-                    th {
-                        background-color: #f2f2f2;
-                        font-weight: bold;
-                    }
-                    a {
-                        display: inline-block;
-                        margin-top: 20px;
-                        text-decoration: none;
-                        color: #0099ff;
-                        font-weight: bold;
-                    }";
-
-                string formHtml = @"
-                    <html>
-                        <head>
-                            <style>
-                                {0}
-                            </style>
-                        </head>
-                        <body>
-                            <form action=""/analyze"" method=""POST"">
-                                <label for=""url1"">URL 1:</label>
-                                <input type=""text"" id=""url1"" name=""url1"" required><br>
-                                <label for=""url2"">URL 2:</label>
-                                <input type=""text"" id=""url2"" name=""url2"" required><br>
-                                <label for=""url3"">URL 3:</label>
-                                <input type=""text"" id=""url3"" name=""url3"" required><br>
-                                <label for=""url4"">URL 4:</label>
-                                <input type=""text"" id=""url4"" name=""url4"" required><br>
-                                <label for=""url5"">URL 5:</label>
-                                <input type=""text"" id=""url5"" name=""url5"" required><br>
-                                <input type=""submit"" value=""Analyze"">
-                            </form>
-                        </body>
-                    </html>";
-
-                string resultsHtmlTemplate = @"
-                    <html>
-                        <head>
-                            <style>
-                                {0}
-                            </style>
-                        </head>
-                        <body>
-                            <h1>Web Server Analysis</h1>
-                            <table>
-                                <tr>
-                                    <th>Web Server</th>
-                                    <th>Count</th>
-                                    <th>Percentage</th>
-                                </tr>
-                                {1}
-                            </table>
-                            <a href=""/"">Analyze more URLs</a>
-                        </body>
-                    </html>";
-
-                endpoints.MapGet("/", async context =>
+                endpoints.MapGet("/", context =>
                 {
-                    await context.Response.WriteAsync(string.Format(formHtml, css));
+                    context.Response.Redirect("/index.html");
+                    return Task.CompletedTask;
                 });
 
                 endpoints.MapPost("/analyze", async context =>
@@ -142,7 +74,13 @@ namespace HeaderHTTPproject
                         resultsHtml += $"<tr><td>{server}</td><td>{count}</td><td>{percentage:N2}%</td></tr>";
                     }
 
-                    await context.Response.WriteAsync(string.Format(resultsHtmlTemplate, css, resultsHtml));
+                    // Read the "results.html" file from the "wwwroot" folder
+                    string resultsHtmlTemplatePath = Path.Combine(env.WebRootPath, "results.html");
+                    string resultsHtmlTemplate = await File.ReadAllTextAsync(resultsHtmlTemplatePath);
+
+                    // Replace the placeholder with the actual results
+                    string finalResultsHtml = string.Format(resultsHtmlTemplate, resultsHtml);
+                    await context.Response.WriteAsync(finalResultsHtml);
                 });
             });
         }
