@@ -12,7 +12,8 @@ namespace HeaderHTTPproject
                 .ConfigureWebHost(webHost =>
                 {
                     webHost.UseKestrel()
-                        .UseStartup<Startup>();
+                        .UseStartup<Startup>()
+                        .UseWebRoot("wwwroot");
                 })
                 .Build();
 

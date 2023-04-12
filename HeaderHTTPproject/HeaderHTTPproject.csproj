@@ -13,6 +13,9 @@
       <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
       <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+  	<Content Include="wwwroot\**">
+    		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  	</Content>
     </ItemGroup>
 
 </Project>

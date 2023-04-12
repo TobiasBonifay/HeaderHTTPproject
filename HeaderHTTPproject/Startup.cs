@@ -28,14 +28,16 @@ namespace HeaderHTTPproject
             }
 
             app.UseRouting();
+            app.UseDefaultFiles(); 
             app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", context =>
+                endpoints.MapGet("/", async context =>
                 {
-                    context.Response.Redirect("/index.html");
-                    return Task.CompletedTask;
+                    string indexPath = Path.Combine(env.WebRootPath, "index.html");
+                    context.Response.ContentType = "text/html";
+                    await context.Response.SendFileAsync(indexPath);
                 });
 
                 endpoints.MapPost("/analyze", async context =>
