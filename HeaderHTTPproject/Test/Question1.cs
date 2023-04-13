@@ -4,7 +4,7 @@
     {
         public static async Task Run(IEnumerable<string> serverUrls)
         {
-            var (serverCounts, errors) = await Startup.GetServerCountsAsync(serverUrls);
+            var (serverCounts, errors) = await Calculation.GetServerCounts(serverUrls);
 
             Console.WriteLine("Server statistics:");
             foreach (var (serverName, count) in serverCounts) Console.WriteLine($"{serverName}: {count}");
