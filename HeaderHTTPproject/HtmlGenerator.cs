@@ -13,7 +13,7 @@ public class HtmlGenerator
         var form = await context.Request.ReadFormAsync();
         return form.Keys.SelectMany(key => form[key].ToString().Split(',')).ToList();
     }
-    
+
     public static string GenerateResultsHtml(Dictionary<string, int> serverCounts, int totalCount)
     {
         var serverCountsHtml = new StringBuilder();

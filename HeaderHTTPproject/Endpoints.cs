@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Text;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,17 +65,73 @@ namespace HeaderHTTPproject
                     await context.Response.WriteAsync(finalResultsHtml);
                 });
                 
-                endpoints.MapGet("/question3", async context =>
+                endpoints.MapGet("/question1", async context =>
                 {
-                    await TestScenarios.Scenario1();
-                    await TestScenarios.Scenario2();
-                    await TestScenarios.Scenario3();
-                    await TestScenarios.Scenario4();
+                    var urls = BestWebsites.MyNotSensitivePageUrls();
+                    var (serverCounts, errors) = await Calculation.GetServerCounts(urls);
+                    var resultsHtml = HtmlGenerator.GenerateResultsHtml(serverCounts, urls.Count);
+                    var errorsHtml = HtmlGenerator.GenerateErrorsHtml(errors);
 
-                    context.Response.ContentType = "text/plain";
-                    await context.Response.WriteAsync("Test scenarios executed.");
+                    var resultPageTemplatePath = Path.Combine(env.WebRootPath, "result-page-template.html");
+                    var resultPageTemplate = await File.ReadAllTextAsync(resultPageTemplatePath);
+
+                    var finalResultPage = resultPageTemplate.Replace("{pageTitle}", "Question 1")
+                        .Replace("{resultSummary}", resultsHtml)
+                        .Replace("{resultDetails}", "")
+                        .Replace("{errors}", errorsHtml);
+
+                    context.Response.ContentType = "text/html";
+                    await context.Response.WriteAsync(finalResultPage);
                 });
-            });
+
+                endpoints.MapGet("/question2", async context =>
+                {
+                    var urls = await HtmlGenerator.GetUrlsFromForm(context);
+                    
+                    var ages = await Calculation.GetPageAges(urls);
+                    var averageAge = Calculation.CalculateAverageAge(ages);
+                    var standardDeviation = Calculation.CalculateStandardDeviation(ages, averageAge);
+
+                    context.Response.ContentType = "text/html";
+                    await context.Response.SendFileAsync(Path.Combine(env.WebRootPath, "question2.html"));
+                    });
+
+                    endpoints.MapGet("/question3", async context =>
+                    {
+                        var sb = new StringBuilder();
+
+                        sb.Append("<h1>Test Scenarios</h1>");
+
+                        sb.Append("<h2>Web servers example</h2>");
+                        await ExecuteScenario(TestScenarios.Scenario1, sb);
+
+                        sb.Append("<h2>News journals example</h2>");
+                        await ExecuteScenario(TestScenarios.Scenario2, sb);
+
+                        sb.Append("<h2>Big companies example</h2>");
+                        await ExecuteScenario(TestScenarios.Scenario3, sb);
+
+                        sb.Append("<h2>Useless websites example</h2>");
+                        await ExecuteScenario(TestScenarios.Scenario4, sb);
+
+                        context.Response.ContentType = "text/html";
+                        await context.Response.WriteAsync(sb.ToString());
+                    });
+                });
+            
+        }
+
+        private static async Task ExecuteScenario(Func<Task> scenario, StringBuilder sb)
+        {
+            try
+            {
+                await scenario.Invoke();
+                sb.Append("<p>Scenario executed successfully</p>");
+            }
+            catch (Exception ex)
+            {
+                sb.Append($"<p>Scenario failed with exception: {ex.Message}</p>");
+            }
         }
     }
 }
