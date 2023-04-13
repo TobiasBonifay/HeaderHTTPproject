@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Primitives;
 
 namespace HeaderHTTPproject
 {
@@ -35,35 +36,52 @@ namespace HeaderHTTPproject
                 endpoints.MapPost("/analyze", async context =>
                 {
                     var urls = await HtmlGenerator.GetUrlsFromForm(context);
+                    var scenario = context.Request.Form["scenario"];
 
-                    // Question 1
-                    var (serverCounts, errors) = await Calculation.GetServerCounts(urls);
-                    var resultsHtml = HtmlGenerator.GenerateResultsHtml(serverCounts, urls.Count);
-                    var errorsHtml = HtmlGenerator.GenerateErrorsHtml(errors);
-
-                    // Question 2
-                    var ages = new List<double>();
-                    foreach (var url in urls)
+                    string? resultsHtml;
+                    switch (scenario)
                     {
-                        var age = await Calculation.GetPageAge(url);
-                        if (age.HasValue) ages.Add(age.Value);
-                    }
-                    var averageAge = Calculation.CalculateAverageAge(ages);
-                    var standardDeviation = Calculation.CalculateStandardDeviation(ages, averageAge);
+                        case "question1":
+                            var (serverCounts, errors) = await Calculation.GetServerCounts(urls);
+                            var serverCountsHtml = HtmlGenerator.GenerateResultsHtml(serverCounts, urls.Count);
+                            var errorsHtml = HtmlGenerator.GenerateErrorsHtml(errors);
+                            resultsHtml = serverCountsHtml + errorsHtml;
+                            break;
 
-                    // Results for Question 2
-                    var q2ResultsHtml = $"<p>Average Age: {averageAge:N2} seconds</p><p>Standard Deviation: {standardDeviation:N2} seconds</p>";
+                        case "question2":
+                            var ages = new List<double>();
+                            foreach (var url in urls)
+                            {
+                                var age = await Calculation.GetPageAge(url);
+                                if (age.HasValue) ages.Add(age.Value);
+                            }
+                            var averageAge = Calculation.CalculateAverageAge(ages);
+                            var standardDeviation = Calculation.CalculateStandardDeviation(ages, averageAge);
+                            resultsHtml = HtmlGenerator.GenerateResultsHtml(averageAge, standardDeviation);
+                            break;
+
+                        case "question3":
+                            var sb = new StringBuilder();
+                            sb.Append("<h1>Test Scenarios</h1>");
+                            sb.Append(await ExecuteScenario(TestScenarios.Scenario1));
+                            sb.Append(await ExecuteScenario(TestScenarios.Scenario2));
+                            sb.Append(await ExecuteScenario(TestScenarios.Scenario3));
+                            sb.Append(await ExecuteScenario(TestScenarios.Scenario4));
+                            resultsHtml = sb.ToString();
+                            break;
+
+                        default:
+                            resultsHtml = "<p>Invalid scenario selected</p>";
+                            break;
+                    }
 
                     var resultsHtmlTemplatePath = Path.Combine(env.WebRootPath, "results.html");
                     var resultsHtmlTemplate = await File.ReadAllTextAsync(resultsHtmlTemplatePath);
 
                     var finalResultsHtml = resultsHtmlTemplate.Replace("{0}", resultsHtml);
-                    finalResultsHtml = finalResultsHtml.Replace("{1}", errorsHtml);
-                    finalResultsHtml = finalResultsHtml.Replace("{2}", q2ResultsHtml);
-
-                    Console.WriteLine("finalResultsHtml: " + finalResultsHtml);
                     await context.Response.WriteAsync(finalResultsHtml);
                 });
+
                 
                 endpoints.MapGet("/question1", async context =>
                 {
@@ -112,16 +130,16 @@ namespace HeaderHTTPproject
                     sb.Append("<h1>Test Scenarios</h1>");
 
                     sb.Append("<h2>Web servers example</h2>");
-                    await ExecuteScenario(TestScenarios.Scenario1, sb);
+                    sb.Append(await ExecuteScenario(TestScenarios.Scenario1));
 
                     sb.Append("<h2>News journals example</h2>");
-                    await ExecuteScenario(TestScenarios.Scenario2, sb);
+                    sb.Append(await ExecuteScenario(TestScenarios.Scenario2));
 
                     sb.Append("<h2>Big companies example</h2>");
-                    await ExecuteScenario(TestScenarios.Scenario3, sb);
+                    sb.Append(await ExecuteScenario(TestScenarios.Scenario3));
 
                     sb.Append("<h2>Useless websites example</h2>");
-                    await ExecuteScenario(TestScenarios.Scenario4, sb);
+                    sb.Append(await ExecuteScenario(TestScenarios.Scenario4));
 
                     context.Response.ContentType = "text/html";
                     await context.Response.WriteAsync(sb.ToString());
@@ -130,17 +148,19 @@ namespace HeaderHTTPproject
             
         }
 
-        private static async Task ExecuteScenario(Func<Task> scenario, StringBuilder sb)
+        private static async Task<string> ExecuteScenario(Func<Task<string>> scenario)
         {
+            var sb = new StringBuilder();
             try
             {
-                await scenario.Invoke();
-                sb.Append("<p>Scenario executed successfully</p>");
+                var result = await scenario.Invoke();
+                sb.Append(result);
             }
             catch (Exception ex)
             {
                 sb.Append($"<p>Scenario failed with exception: {ex.Message}</p>");
             }
+            return sb.ToString();
         }
     }
 }

@@ -1,23 +1,19 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>HeaderHTTP</title>
-    <link href="style.css" rel="stylesheet">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Header Analysis Tool</title>
 </head>
 <body>
-<form action="/analyze" method="POST">
-    <label for="url1">URL 1:</label>
-    <input id="url1" name="url1" required type="text"><br>
-    <label for="url2">URL 2:</label>
-    <input id="url2" name="url2" required type="text"><br>
-    <label for="url3">URL 3:</label>
-    <input id="url3" name="url3" required type="text"><br>
-    <label for="url4">URL 4:</label>
-    <input id="url4" name="url4" required type="text"><br>
-    <label for="url5">URL 5:</label>
-    <input id="url5" name="url5" required type="text"><br>
+<h1>Header Analysis Tool</h1>
+<form action="analyze" method="post">
+    <label for="urls">URLs to analyze (separated by commas):</label>
+    <input type="text" name="urls" id="urls"><br><br>
+    <label for="scenario">Scenario:</label>
+    <select name="scenario" id="scenario">
+        <option value="question1">Question 1</option>
+        <option value="question2">Question 2</option>
+        <option value="question3">Question 3</option>
+    </select><br><br>
     <input type="submit" value="Analyze">
 </form>
 </body>

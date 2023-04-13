@@ -22,10 +22,31 @@ public class BestWebsites
     {
         return new List<string>
         {
-            "http://www.koalastothemax.com/",
-            "http://www.therestartpage.com/",
-            "https://scatter.wordpress.com/2010/05/30/the-shortest-possible-game-of-monopoly-21-seconds/",
-            "https://paint.toys/"
+            // "http://www.koalastothemax.com/",
+            // "http://www.therestartpage.com/",
+            // "https://scatter.wordpress.com/2010/05/30/the-shortest-possible-game-of-monopoly-21-seconds/",
+            "https://paint.toys/",
+            // "https://remoji.com/",
+            "https://www.wikihow.com/Recycle-Your-Socks",
+            // "https://www.rrrgggbbb.com/",
+            // "https://www.patience-is-a-virtue.org/",
+            // "https://www.ouaismaisbon.ch/",
+            "http://alwaysjudgeabookbyitscover.com/",
+            // "https://garfieldminusgarfield.net/",
+            // "https://www.pointerpointer.com/",
+            // "https://www.ismycomputeron.com/",
+            // "https://www.nullingthevoid.com/",
+            // "https://www.muchbetterthanthis.com/",
+            // "https://www.yesnoif.com/",
+            // "https://iamawesome.com/",
+            "https://www.spaghettimonster.org/",
+            // "https://www.pleaselike.com/",
+            // "https://crouton.net/",
+            // "https://corgiorgy.com/",
+            // "https://www.wutdafuk.com/",
+            // "https://unicodesnowmanforyou.com/",
+            // "https://www.crossdivisions.com/",
+            "https://trypap.com/"
         };
     }
 

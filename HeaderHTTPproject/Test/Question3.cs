@@ -1,47 +1,49 @@
-﻿namespace HeaderHTTPproject;
+﻿using System.Text;
+using Microsoft.Extensions.Primitives;
+
+namespace HeaderHTTPproject;
 
 public class TestScenarios
 {
-    public static async Task Scenario1()
+    public static async Task<string> Scenario1()
     {
-        await RunTestScenario("Web servers example", BestWebsites.WebServers());
+        return await RunTestScenario("Web servers example", BestWebsites.WebServers(), new StringBuilder());
     }
 
-    public static async Task Scenario2()
+    public static async Task<string> Scenario2()
     {
-        await RunTestScenario("News journals example", BestWebsites.NewsWebsite());
+        return await RunTestScenario("News journals example", BestWebsites.NewsWebsite(), new StringBuilder());
     }
 
-    public static async Task Scenario3()
+    public static async Task<string> Scenario3()
     {
-        await RunTestScenario("Big companies example", BestWebsites.BigCompanies());
+        return await RunTestScenario("Big companies example", BestWebsites.BigCompanies(), new StringBuilder());
     }
 
-    public static async Task Scenario4()
+    public static async Task<string> Scenario4()
     {
-        await RunTestScenario("Useless websites example", BestWebsites.UselessWebsites());
+        return await RunTestScenario("Useless websites example", BestWebsites.UselessWebsites(), new StringBuilder());
     }
 
-    private static async Task RunTestScenario(string scenarioName, List<string> urls)
+    private static async Task<string> RunTestScenario(string scenarioName, List<string> urls, StringBuilder sb)
     {
-        Console.WriteLine($"\n{scenarioName}");
-        // var (serverCounts, errors) = await Calculation.GetServerCounts(urls);
-        // foreach (var (serverName, count) in serverCounts) Console.WriteLine($"{serverName}: {count}");
+        sb.Append("<h3>").Append(scenarioName).Append("</h3>");
         var headerData = await Calculation.GetImportantHeaderDataOfPages(urls);
 
         var ages = headerData.Select(x => x.age).ToList();
         var averageAge = Calculation.CalculateAverageAge(ages);
         var standardDeviation = Calculation.CalculateStandardDeviation(ages, averageAge);
-        Console.WriteLine($"Average age: {averageAge} seconds");
-        Console.WriteLine($"Standard deviation: {standardDeviation} seconds");
+        sb.Append("<p>Average age: ").Append(averageAge).Append(" seconds</p>").AppendLine();
+        sb.Append("<p>Standard deviation: ").Append(standardDeviation).Append(" seconds</p>").AppendLine();
 
         var totalContentLength = headerData.Sum(x => x.contentLength);
         var averageContentLength = totalContentLength / headerData.Count;
-        Console.WriteLine($"Total content length: {Calculation.FormatBytes(totalContentLength)}");
-        Console.WriteLine($"Average content length: {Calculation.FormatBytes(averageContentLength)}");
+        sb.Append("<p>Total content length: ").Append(Calculation.FormatBytes(totalContentLength)).Append("</p>").AppendLine();
+        sb.Append("<p>Average content length: ").Append(Calculation.FormatBytes(averageContentLength)).Append("</p>").AppendLine();
 
         var contentTypeCounts = headerData.GroupBy(x => x.contentType)
             .ToDictionary(x => x.Key, x => x.Count());
-        foreach (var (contentType, count) in contentTypeCounts) Console.WriteLine($"{contentType}: {count}");
+        foreach (var (contentType, count) in contentTypeCounts) sb.Append("<p>").Append(contentType).Append(": ").Append(count).Append("</p>").AppendLine();
+        return sb.ToString();
     }
 }
