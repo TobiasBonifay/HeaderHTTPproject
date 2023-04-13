@@ -1,25 +1,29 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Web Server Analysis</title>
-    <link rel="stylesheet" href="style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <title>Results</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<hr>
-<h2>Server Counts</h2>
+<h2>Server Statistics</h2>
 <table>
+    <thead>
     <tr>
         <th>Server</th>
         <th>Count</th>
         <th>Percentage</th>
     </tr>
+    </thead>
+    <tbody>
     {0}
+    </tbody>
 </table>
-<hr>
-<!-- Errors if any -->
+<h2>Page Age Statistics</h2>
+{2}
+<!--
+<h2>Page Size Statistics</h2>
+{3} -->
 {1}
-<a href="/">Analyze more URLs</a>
 </body>
 </html>
