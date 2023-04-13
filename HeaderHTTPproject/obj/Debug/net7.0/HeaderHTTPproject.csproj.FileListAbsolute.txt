@@ -108,3 +108,4 @@ C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\obj\De
 C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\obj\Debug\net7.0\HeaderHTTPproject.pdb
 C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\obj\Debug\net7.0\HeaderHTTPproject.genruntimeconfig.cache
 C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\obj\Debug\net7.0\ref\HeaderHTTPproject.dll
+C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\wwwroot\result-page-template.html

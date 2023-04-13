@@ -34,7 +34,7 @@ public class BestWebsites
         return new List<string>
         {
             "https://www.nytimes.com/",
-            "https://www.bbc.com/",
+            // "https://www.bbc.com/",
             "https://edition.cnn.com/",
             "https://www.theguardian.com/",
             "https://www.latimes.com/"
@@ -45,11 +45,11 @@ public class BestWebsites
     {
         return new List<string>
         {
-            "https://www.google.com/",
-            "https://www.youtube.com/",
-            "https://www.facebook.com/",
+            "http://www.google.com/",
+            "http://www.youtube.com/",
+            "http://www.facebook.com/",
             "https://www.yahoo.com/",
-            "https://www.amazon.com/"
+            "https//www.amazon.com/"
         };
     }
 

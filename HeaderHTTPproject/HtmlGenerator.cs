@@ -16,7 +16,7 @@ public class HtmlGenerator
 
     public static string GenerateResultsHtml(Dictionary<string, int> serverCounts, int totalCount)
     {
-        var serverCountsHtml = new StringBuilder();
+        var serverCountsHtml = new StringBuilder("<h2>Results</h2><table><tr><th>Server</th><th>Count</th><th>Percentage</th></tr>");
         foreach (var (serverName, count) in serverCounts)
         {
             var percentage = count / (double)totalCount * 100;
@@ -24,7 +24,7 @@ public class HtmlGenerator
                                     $"<td>{count}</td>" +
                                     $"<td>{percentage:N2}%</td></tr>");
         }
-
+        serverCountsHtml.Append("</table>");
         return serverCountsHtml.ToString();
     }
 
