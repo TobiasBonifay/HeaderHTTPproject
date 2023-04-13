@@ -86,38 +86,47 @@ namespace HeaderHTTPproject
 
                 endpoints.MapGet("/question2", async context =>
                 {
-                    var urls = await HtmlGenerator.GetUrlsFromForm(context);
-                    
+                    Console.WriteLine("Question 2");
+                    var urls = BestWebsites.MyNotSensitivePageUrls();
+                    Console.WriteLine("urls: " + urls.Count + " urls");
                     var ages = await Calculation.GetPageAges(urls);
                     var averageAge = Calculation.CalculateAverageAge(ages);
                     var standardDeviation = Calculation.CalculateStandardDeviation(ages, averageAge);
+                    var resultsHtml = HtmlGenerator.GenerateResultsHtml(averageAge, standardDeviation);
+                    Console.WriteLine("resultsHtml: " + resultsHtml);
+                    var resultPageTemplatePath = Path.Combine(env.WebRootPath, "result-page-template.html");
+                    var resultPageTemplate = await File.ReadAllTextAsync(resultPageTemplatePath);
+                    var finalResultPage = resultPageTemplate.Replace("{pageTitle}", "Question 2")
+                        .Replace("{resultSummary}", resultsHtml)
+                        .Replace("{resultDetails}", "")
+                        .Replace("{errors}", "");
 
                     context.Response.ContentType = "text/html";
-                    await context.Response.SendFileAsync(Path.Combine(env.WebRootPath, "question2.html"));
-                    });
-
-                    endpoints.MapGet("/question3", async context =>
-                    {
-                        var sb = new StringBuilder();
-
-                        sb.Append("<h1>Test Scenarios</h1>");
-
-                        sb.Append("<h2>Web servers example</h2>");
-                        await ExecuteScenario(TestScenarios.Scenario1, sb);
-
-                        sb.Append("<h2>News journals example</h2>");
-                        await ExecuteScenario(TestScenarios.Scenario2, sb);
-
-                        sb.Append("<h2>Big companies example</h2>");
-                        await ExecuteScenario(TestScenarios.Scenario3, sb);
-
-                        sb.Append("<h2>Useless websites example</h2>");
-                        await ExecuteScenario(TestScenarios.Scenario4, sb);
-
-                        context.Response.ContentType = "text/html";
-                        await context.Response.WriteAsync(sb.ToString());
-                    });
+                    await context.Response.WriteAsync(finalResultPage);
                 });
+
+                endpoints.MapGet("/question3", async context =>
+                {
+                    var sb = new StringBuilder();
+
+                    sb.Append("<h1>Test Scenarios</h1>");
+
+                    sb.Append("<h2>Web servers example</h2>");
+                    await ExecuteScenario(TestScenarios.Scenario1, sb);
+
+                    sb.Append("<h2>News journals example</h2>");
+                    await ExecuteScenario(TestScenarios.Scenario2, sb);
+
+                    sb.Append("<h2>Big companies example</h2>");
+                    await ExecuteScenario(TestScenarios.Scenario3, sb);
+
+                    sb.Append("<h2>Useless websites example</h2>");
+                    await ExecuteScenario(TestScenarios.Scenario4, sb);
+
+                    context.Response.ContentType = "text/html";
+                    await context.Response.WriteAsync(sb.ToString());
+                });
+            });
             
         }
 

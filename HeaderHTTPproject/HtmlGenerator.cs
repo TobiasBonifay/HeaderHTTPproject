@@ -37,4 +37,11 @@ public class HtmlGenerator
         errorsHtml.Append("</ul>");
         return errorsHtml.ToString();
     }
+
+    public static string? GenerateResultsHtml(double averageAge, double standardDeviation)
+    {
+        return $"<table><tr><th>Average Age</th><th>Standard Deviation</th></tr>" +
+               $"<tr><td>{averageAge:N2} seconds</td>" +
+               $"<td>{standardDeviation:N2} seconds</td></tr></table>";
+    }
 }
