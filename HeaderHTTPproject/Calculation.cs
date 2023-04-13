@@ -46,8 +46,8 @@
             try
             {
                 var response = await HttpClient.GetAsync(url);
-                if (!response.Headers.Date.HasValue) return null;
-                var age = (DateTime.UtcNow - response.Headers.Date.Value).TotalSeconds;
+                if (!response.Headers.Age.HasValue) return null;
+                var age = (DateTime.UtcNow - response.Headers.Age.Value).Second;
                 return age;
             }
             catch (Exception ex)
