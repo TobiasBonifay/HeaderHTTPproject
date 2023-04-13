@@ -9,7 +9,7 @@ namespace HeaderHTTPproject
 {
     public class Startup
     {
-        public void ConfigureServices(IServiceCollection services)
+        public static void ConfigureServices(IServiceCollection services)
         {
             services.AddRouting();
             services.AddControllersWithViews();
@@ -51,13 +51,13 @@ namespace HeaderHTTPproject
             });
         }
 
-        private async Task<List<string>> GetUrlsFromFormAsync(HttpContext context)
+        private static async Task<List<string>> GetUrlsFromFormAsync(HttpContext context)
         {
             var form = await context.Request.ReadFormAsync();
             return form.Keys.SelectMany(key => form[key].ToString().Split(',')).ToList();
         }
 
-        private async Task<(Dictionary<string, int>, List<string>)> GetServerCountsAsync(List<string> urls)
+        private static async Task<(Dictionary<string, int>, List<string>)> GetServerCountsAsync(List<string> urls)
         {
             var httpClient = new HttpClient();
             var serverCounts = new Dictionary<string, int>();
@@ -81,22 +81,20 @@ namespace HeaderHTTPproject
             return (serverCounts, errors);
         }
         
-        private string GenerateResultsHtml(Dictionary<string, int> serverCounts, int totalCount)
+        private static string GenerateResultsHtml(Dictionary<string, int> serverCounts, int totalCount)
         {
-            StringBuilder serverCountsHtml = new StringBuilder();
-            foreach (var serverCount in serverCounts)
+            var serverCountsHtml = new StringBuilder();
+            foreach (var (serverName, count) in serverCounts)
             {
-                string server = serverCount.Key;
-                int count = serverCount.Value;
-                double percentage = (count / (double)totalCount) * 100;
-                serverCountsHtml.Append($"<tr><td>{server}</td><td>{count}</td><td>{percentage:N2}%</td></tr>");
+                var percentage = (count / (double)totalCount) * 100;
+                serverCountsHtml.Append($"<tr><td>{serverName}</td><td>{count}</td><td>{percentage:N2}%</td></tr>");
             }
             return serverCountsHtml.ToString();
         }
         
-        private string GenerateErrorsHtml(List<string> errors)
+        private static string GenerateErrorsHtml(List<string> errors)
         {
-            StringBuilder errorsHtml = new StringBuilder();
+            var errorsHtml = new StringBuilder();
             foreach (var error in errors) errorsHtml.Append($"<li>{error}</li>");
             return errorsHtml.ToString();
         }
