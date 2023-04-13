@@ -35,22 +35,24 @@ namespace HeaderHTTPproject
 
                 endpoints.MapPost("/analyze", async context =>
                 {
-                    var urls = await HtmlGenerator.GetUrlsFromForm(context);
+                    // var urls = await HtmlGenerator.GetUrlsFromForm(context);
                     var scenario = context.Request.Form["scenario"];
 
                     string? resultsHtml;
                     switch (scenario)
                     {
                         case "question1":
-                            var (serverCounts, errors) = await Calculation.GetServerCounts(urls);
-                            var serverCountsHtml = HtmlGenerator.GenerateResultsHtml(serverCounts, urls.Count);
+                            var urls1 = BestWebsites.MyNotSensitivePageUrls();
+                            var (serverCounts, errors) = await Calculation.GetServerCounts(urls1);
+                            var serverCountsHtml = HtmlGenerator.GenerateResultsHtml(serverCounts, urls1.Count);
                             var errorsHtml = HtmlGenerator.GenerateErrorsHtml(errors);
                             resultsHtml = serverCountsHtml + errorsHtml;
                             break;
 
                         case "question2":
+                            var urls2 = BestWebsites.DifferentPagesOfTheSameWebsites();
                             var ages = new List<double>();
-                            foreach (var url in urls)
+                            foreach (var url in urls2)
                             {
                                 var age = await Calculation.GetPageAge(url);
                                 if (age.HasValue) ages.Add(age.Value);
@@ -75,10 +77,13 @@ namespace HeaderHTTPproject
                             break;
                     }
 
-                    var resultsHtmlTemplatePath = Path.Combine(env.WebRootPath, "results.html");
+                    var resultsHtmlTemplatePath = Path.Combine(env.WebRootPath, "result-page-template.html");
                     var resultsHtmlTemplate = await File.ReadAllTextAsync(resultsHtmlTemplatePath);
 
-                    var finalResultsHtml = resultsHtmlTemplate.Replace("{0}", resultsHtml);
+                    var finalResultsHtml = resultsHtmlTemplate.Replace("{pageTitle}", "Question 1")
+                        .Replace("{resultSummary}", "")
+                        .Replace("{resultDetails}", resultsHtml)
+                        .Replace("{errors}", "");
                     await context.Response.WriteAsync(finalResultsHtml);
                 });
 
@@ -105,7 +110,7 @@ namespace HeaderHTTPproject
                 endpoints.MapGet("/question2", async context =>
                 {
                     Console.WriteLine("Question 2");
-                    var urls = BestWebsites.MyNotSensitivePageUrls();
+                    var urls = BestWebsites.DifferentPagesOfTheSameWebsites();
                     Console.WriteLine("urls: " + urls.Count + " urls");
                     var ages = await Calculation.GetPageAges(urls);
                     var averageAge = Calculation.CalculateAverageAge(ages);

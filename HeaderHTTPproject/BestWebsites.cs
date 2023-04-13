@@ -85,4 +85,17 @@ public class BestWebsites
             "https://gunicorn.org/",
         };
     }
+
+    public static List<string> DifferentPagesOfTheSameWebsites()
+    {
+        return new List<string>
+        {
+            "https://wikipedia.org/wiki/HTTP",
+            "https://wikipedia.org/wiki/HTTPS",
+            "https://wikipedia.org/wiki/HTTP/2",
+            "https://wikipedia.org/wiki/HTTP_cookie",
+            "https://wikipedia.org/wiki/HTTP_referer",
+            "https://wikipedia.org/wiki/HTTP_tunnel",
+        };
+    }
 }
