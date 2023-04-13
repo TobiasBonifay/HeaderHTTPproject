@@ -4,16 +4,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace HeaderHTTPproject
 {
     public class Startup
     {
-       
-        // Log4net
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
-        
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRouting();
@@ -22,10 +17,7 @@ namespace HeaderHTTPproject
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
             app.UseRouting();
             app.UseDefaultFiles();
@@ -35,7 +27,7 @@ namespace HeaderHTTPproject
             {
                 endpoints.MapGet("/", async context =>
                 {
-                    string indexPath = Path.Combine(env.WebRootPath, "index.html");
+                    var indexPath = Path.Combine(env.WebRootPath, "index.html");
                     context.Response.ContentType = "text/html";
                     await context.Response.SendFileAsync(indexPath);
                 });
@@ -44,13 +36,13 @@ namespace HeaderHTTPproject
                 {
                     var urls = await GetUrlsFromFormAsync(context);
                     var (serverCounts, errors) = await GetServerCountsAsync(urls);
-                    string resultsHtml = GenerateResultsHtml(serverCounts, urls.Count);
-                    string errorsHtml = GenerateErrorsHtml(errors);
+                    var resultsHtml = GenerateResultsHtml(serverCounts, urls.Count);
+                    var errorsHtml = GenerateErrorsHtml(errors);
 
-                    string resultsHtmlTemplatePath = Path.Combine(env.WebRootPath, "results.html");
-                    string resultsHtmlTemplate = await File.ReadAllTextAsync(resultsHtmlTemplatePath);
+                    var resultsHtmlTemplatePath = Path.Combine(env.WebRootPath, "results.html");
+                    var resultsHtmlTemplate = await File.ReadAllTextAsync(resultsHtmlTemplatePath);
 
-                    string finalResultsHtml = resultsHtmlTemplate.Replace("{0}", resultsHtml);
+                    var finalResultsHtml = resultsHtmlTemplate.Replace("{0}", resultsHtml);
                     finalResultsHtml = finalResultsHtml.Replace("{1}", errorsHtml);
                     
                     Console.WriteLine("finalResultsHtml: " + finalResultsHtml);
@@ -76,11 +68,8 @@ namespace HeaderHTTPproject
                 try
                 {
                     var response = await httpClient.GetAsync(url);
-                    string server = response.Headers.Server.ToString();
-                    if (!serverCounts.ContainsKey(server))
-                    {
-                        serverCounts[server] = 0;
-                    }
+                    var server = response.Headers.Server.ToString();
+                    if (!serverCounts.ContainsKey(server)) serverCounts[server] = 0;
                     serverCounts[server]++;
                 }
                 catch (Exception ex)
@@ -89,13 +78,11 @@ namespace HeaderHTTPproject
                     errors.Add($"Error fetching headers for {url}: {ex.Message}");
                 }
             }
-
             return (serverCounts, errors);
         }
         
         private string GenerateResultsHtml(Dictionary<string, int> serverCounts, int totalCount)
         {
-           
             StringBuilder serverCountsHtml = new StringBuilder();
             foreach (var serverCount in serverCounts)
             {
@@ -104,17 +91,13 @@ namespace HeaderHTTPproject
                 double percentage = (count / (double)totalCount) * 100;
                 serverCountsHtml.Append($"<tr><td>{server}</td><td>{count}</td><td>{percentage:N2}%</td></tr>");
             }
-            
             return serverCountsHtml.ToString();
         }
         
         private string GenerateErrorsHtml(List<string> errors)
         {
             StringBuilder errorsHtml = new StringBuilder();
-            foreach (var error in errors)
-            {
-                errorsHtml.Append($"<li>{error}</li>");
-            }
+            foreach (var error in errors) errorsHtml.Append($"<li>{error}</li>");
             return errorsHtml.ToString();
         }
     }
