@@ -17,7 +17,7 @@ table {
 
 form {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 1em;
@@ -58,4 +58,12 @@ h1, h2, h3 {
 
 p {
     display: inline-block;
+}
+
+#lookupSection {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 1em 0;
 }

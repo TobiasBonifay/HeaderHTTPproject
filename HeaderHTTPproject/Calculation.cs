@@ -66,26 +66,7 @@ public class Calculation
             return null;
         }
     }
-
-    public static async Task<List<double>> GetPageAges(List<string> urls, List<string> errors)
-    {
-        var ages = new List<double>();
-
-        foreach (var url in urls)
-            try
-            {
-                var age = await GetPageAge(url, errors);
-                if (!age.HasValue) continue;
-                ages.Add(age.Value);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error fetching headers for {url}: {ex.Message}");
-                errors.Add($"Error fetching headers for {url}: {ex.Message}");
-            }
-
-        return ages;
-    }
+    
 
     /**
      * Gets the age of a page. The age is the difference between the current time and the date of the page.

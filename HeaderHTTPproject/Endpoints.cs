@@ -54,7 +54,7 @@ namespace HeaderHTTPproject
                         case "yourUrl":
                             var urls = await HtmlGenerator.GetUrlsFromForm(context);
                             resultsHtml = await Question1.Run(urls, errorAccumulator);
-                            resultsHtml += await Question2.Run(urls, errorAccumulator);
+                            // resultsHtml += await Question2.Run(urls, errorAccumulator);
                             resultsHtml += await Question3.Run(urls, errorAccumulator);
                             break;
 

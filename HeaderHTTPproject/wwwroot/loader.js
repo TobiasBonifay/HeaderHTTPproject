@@ -1,10 +1,12 @@
 ﻿const form = document.getElementById('analyze-form');
 const resultDiv = document.getElementById('result');
 
-form.addEventListener('submit', async event => {
-    event.preventDefault();
+async function handleSubmit(event) {
+    if (event) {
+        event.preventDefault();
+    }
 
-    const formData = new FormData(event.target);
+    const formData = new FormData(form);
 
     resultDiv.innerHTML = 'Loading';
 
@@ -15,8 +17,8 @@ form.addEventListener('submit', async event => {
     }, 500);
 
     try {
-        const response = await fetch(event.target.action, {
-            method: event.target.method,
+        const response = await fetch(form.action, {
+            method: form.method,
             body: formData
         });
         resultDiv.innerHTML = await response.text();
@@ -26,4 +28,25 @@ form.addEventListener('submit', async event => {
     }
 
     clearInterval(interval);
-});
+}
+
+form.addEventListener('submit', handleSubmit);
+
+
+form.addEventListener('submit', handleSubmit);
+
+function handleScenarioChange() {
+    const scenarioDropdown = document.getElementById('scenario');
+    const urlInputSection = document.getElementById('urlInputSection');
+
+    if (scenarioDropdown.value) {
+        document.getElementById("result").innerHTML = "";
+    }
+
+    if (scenarioDropdown.value === 'yourUrl') {
+        urlInputSection.style.display = 'grid';
+    } else {
+        urlInputSection.style.display = 'none';
+        handleSubmit({ target: form, preventDefault: () => {} });
+    }
+}

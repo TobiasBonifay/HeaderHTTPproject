@@ -8,17 +8,22 @@
 <h1>Header Analysis Tool</h1>
 <form id="analyze-form" action="analyze" method="post">
     
-    <label for="urls">URLs to analyze (separated by commas):</label>
-    <input type="text" name="urls" id="urls"><br><br>
-    
-    <label for="scenario">Scenario:</label>
-    <select name="scenario" id="scenario">
-        <option value="question1">Question 1</option>
-        <option value="question2">Question 2</option>
-        <option value="question3">Question 3</option>
-        <option value="yourUrl">Your URL</option>
-    </select><br><br>
-    <input type="submit" value="Analyze">
+    <div id="lookupSection">
+        <label for="scenario">Scenario:</label>
+        <select name="scenario" id="scenario" onchange="handleScenarioChange();">
+            <option value="">Select a scenario...</option>
+            <option value="question1">Question 1</option>
+            <option value="question2">Question 2</option>
+            <option value="question3">Question 3</option>
+            <option value="yourUrl">Your URL</option>
+        </select>
+    </div>
+
+    <div id="urlInputSection" style="display: none;">
+        <label for="urls">URLs to analyze (separated by commas):</label>
+        <input type="text" name="urls" id="urls">
+        <input type="submit" value="Analyze" onclick="handleSubmit()">
+    </div>
 </form>
 <div id="result"></div>
 
