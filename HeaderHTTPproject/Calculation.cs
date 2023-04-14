@@ -30,6 +30,7 @@ public static class Calculation
             errors.Add($"No server header for {url}");
             return "Unknown";
         }
+
         return serverName;
     }
 
@@ -66,18 +67,15 @@ public static class Calculation
             ? (DateTime.UtcNow - response.Headers.Age.Value).Second
             : (double?)null;
 
-        DateTimeOffset lastModification = DateTimeOffset.MinValue;
+        var lastModification = DateTimeOffset.MinValue;
         if (response.Content.Headers.LastModified != null)
         {
-            var lastModificationString = response.Content.Headers.LastModified.GetValueOrDefault().UtcDateTime.ToString();
-            if (DateTimeOffset.TryParse(lastModificationString, out DateTimeOffset lastModificationResult))
-            {
+            var lastModificationString =
+                response.Content.Headers.LastModified.GetValueOrDefault().UtcDateTime.ToString();
+            if (DateTimeOffset.TryParse(lastModificationString, out var lastModificationResult))
                 lastModification = lastModificationResult;
-            }
             else
-            {
                 errors.Add($"Invalid Last-Modified header for {url}");
-            }
         }
         else
         {
