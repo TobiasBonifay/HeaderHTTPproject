@@ -2,6 +2,11 @@
 
 public abstract record BestWebsites
 {
+    
+    /**
+     * The following websites are used to test the question 1.
+     * They are here to test.
+     */
     public static List<string> MyNotSensitivePageUrls()
     {
         return new List<string>
@@ -20,6 +25,9 @@ public abstract record BestWebsites
     }
 
 
+    /**
+     * The following websites are used to test the question 3.
+     */
     public static List<string> UselessWebsites()
     {
         return new List<string>
@@ -52,6 +60,10 @@ public abstract record BestWebsites
         };
     }
 
+    /**
+     * The following websites are used to test the question 3.
+     * They are all news websites. They should have a lot of content... They should be heavy.
+     */
     public static List<string> NewsWebsite()
     {
         return new List<string>
@@ -64,6 +76,10 @@ public abstract record BestWebsites
         };
     }
 
+    /**
+     * The following websites are used to test the question 3.
+     * They are all big companies. They should have optimized the size of their pages to be as small as possible.
+     */
     public static List<string> BigCompanies()
     {
         return new List<string>
@@ -76,6 +92,9 @@ public abstract record BestWebsites
         };
     }
 
+    /**
+     * The following websites are used to test the question 3.
+     */
     public static List<string> WebServers()
     {
         return new List<string>
@@ -88,6 +107,11 @@ public abstract record BestWebsites
         };
     }
 
+    /**
+     * The following websites are used to test the question 2.
+     * They are all different pages of the same website.
+     * The goal is to test the average age of the pages.
+     */
     public static List<string> DifferentPagesOfTheSameWebsites()
     {
         return new List<string>
