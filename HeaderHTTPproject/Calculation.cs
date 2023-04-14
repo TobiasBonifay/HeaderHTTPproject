@@ -1,4 +1,6 @@
-﻿namespace HeaderHTTPproject;
+﻿using System.Text;
+
+namespace HeaderHTTPproject;
 
 public class Calculation
 {
@@ -9,17 +11,20 @@ public class Calculation
      * @param urls The list of URLs to check.
      * @return A dictionary of server names and the number of times they appear in the list of URLs.
      */
-    public static async Task<(Dictionary<string, int>, List<string>)> GetServerCounts(IEnumerable<string> urls)
+    public static async Task<Dictionary<string, int>> GetServerCounts(List<string> urls, List<string> errors)
     {
         var serverCounts = new Dictionary<string, int>();
-        var errors = new List<string>();
 
         foreach (var url in urls)
             try
             {
                 var response = await HttpClient.GetAsync(url);
                 var server = response.Headers.Server.ToString();
-                if (string.IsNullOrWhiteSpace(server)) server = "Unknown";
+                if (string.IsNullOrWhiteSpace(server))
+                {
+                    server = "Unknown";
+                    errors.Add($"No server header for {url}");
+                }
                 if (!serverCounts.ContainsKey(server)) serverCounts[server] = 0;
                 serverCounts[server]++;
             }
@@ -29,7 +34,7 @@ public class Calculation
                 errors.Add($"Error fetching headers for {url}: {ex.Message}");
             }
 
-        return (serverCounts, errors);
+        return serverCounts;
     }
 
 
@@ -39,37 +44,44 @@ public class Calculation
      * @param url The URL of the page.
      * @return The age of the page in seconds I guess
      */
-    public static async Task<double?> GetPageAge(string url)
+    public static async Task<double?> GetPageAge(string url, List<string> errors)
     {
         try
         {
             var response = await HttpClient.GetAsync(url);
             Console.WriteLine($"Age of {url}: {response.Headers.Age}");
-            if (!response.Headers.Age.HasValue) return null;
+            if (!response.Headers.Age.HasValue)
+            {
+                Console.WriteLine($"No age header for {url}");
+                errors.Add($"No age header for {url}");
+                return null;
+            }
             var age = (DateTime.UtcNow - response.Headers.Age.Value).Second;
             return age;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching headers for {url}: {ex.Message}");
+            errors.Add($"Error fetching headers for {url}: {ex.Message}");
             return null;
         }
     }
 
-    public static async Task<List<double>> GetPageAges(IEnumerable<string> urls)
+    public static async Task<List<double>> GetPageAges(List<string> urls, List<string> errors)
     {
         var ages = new List<double>();
 
         foreach (var url in urls)
             try
             {
-                var age = await GetPageAge(url);
+                var age = await GetPageAge(url, errors);
                 if (!age.HasValue) continue;
                 ages.Add(age.Value);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error fetching headers for {url}: {ex.Message}");
+                errors.Add($"Error fetching headers for {url}: {ex.Message}");
             }
 
         return ages;
@@ -81,15 +93,15 @@ public class Calculation
      * @param url The URL of the page.
      * @return The age of the page in seconds I guess
      */
-    public static async Task<List<(double age, long contentLength, string contentType)>> GetImportantHeaderDataOfPages(
-        IEnumerable<string> urls)
+    public static async Task<(List<(double age, long contentLength, string contentType)> results, List<string> errors)> GetImportantHeaderDataOfPages(
+        List<string> urls)
     {
         var results = new List<(double age, long contentLength, string contentType)>();
-
+        var errors = new List<string>();
         foreach (var url in urls)
             try
             {
-                var age = await GetPageAge(url);
+                var age = await GetPageAge(url, errors);
                 if (!age.HasValue) continue;
 
                 var response = await HttpClient.GetAsync(url);
@@ -101,9 +113,10 @@ public class Calculation
             catch (Exception ex)
             {
                 Console.WriteLine($"Error fetching headers for {url}: {ex.Message}");
+                errors.Add($"Error fetching headers for {url}: {ex.Message}");
             }
 
-        return results;
+        return (results, errors);
     }
 
     /**

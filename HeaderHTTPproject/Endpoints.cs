@@ -39,37 +39,45 @@ namespace HeaderHTTPproject
                     var scenario = context.Request.Form["scenario"];
 
                     string? resultsHtml;
+                    string? errorsHtml = null;
                     switch (scenario)
                     {
                         case "question1":
+                            var errors1 = new List<string>();
                             var urls1 = BestWebsites.MyNotSensitivePageUrls();
-                            var (serverCounts, errors) = await Calculation.GetServerCounts(urls1);
-                            var serverCountsHtml = HtmlGenerator.GenerateResultsHtml(serverCounts, urls1.Count);
-                            var errorsHtml = HtmlGenerator.GenerateErrorsHtml(errors);
-                            resultsHtml = serverCountsHtml + errorsHtml;
+                            var serverCounts = await Calculation.GetServerCounts(urls1, errors1);
+                            resultsHtml = HtmlGenerator.GenerateResultsHtml(serverCounts, urls1.Count);
+                            errorsHtml = HtmlGenerator.GenerateErrorsHtml(errors1);
                             break;
 
                         case "question2":
+                            var errors2 = new List<string>();
                             var urls2 = BestWebsites.DifferentPagesOfTheSameWebsites();
                             var ages = new List<double>();
                             foreach (var url in urls2)
                             {
-                                var age = await Calculation.GetPageAge(url);
+                                var age = await Calculation.GetPageAge(url, errors2);
                                 if (age.HasValue) ages.Add(age.Value);
+                                else errors2.Add("No age found for " + url + ",");
                             }
                             var averageAge = Calculation.CalculateAverageAge(ages);
                             var standardDeviation = Calculation.CalculateStandardDeviation(ages, averageAge);
                             resultsHtml = HtmlGenerator.GenerateResultsHtml(averageAge, standardDeviation);
+                            errorsHtml = HtmlGenerator.GenerateErrorsHtml(errors2);
                             break;
 
                         case "question3":
                             var sb = new StringBuilder();
+                            var errors3 = new List<string>();
                             sb.Append("<h2>Test Scenarios</h2>");
-                            // sb.Append(await ExecuteScenario(TestScenarios.Scenario1));
-                            sb.Append(await ExecuteScenario(TestScenarios.Scenario2));
-                            sb.Append(await ExecuteScenario(TestScenarios.Scenario3));
-                            sb.Append(await ExecuteScenario(TestScenarios.Scenario4));
+                            var serverCounts1 = await Calculation.GetServerCounts(TestScenarios.Scenario1, errors3);
+                            sb.Append(serverCounts1);
+                            var serverCounts2 = await Calculation.GetServerCounts(TestScenarios.Scenario2, errors3);
+                            sb.Append(serverCounts2);
+                            var serverCounts3 = await Calculation.GetServerCounts(TestScenarios.Scenario3, errors3);
+                            sb.Append(serverCounts3);
                             resultsHtml = sb.ToString();
+                            errorsHtml = HtmlGenerator.GenerateErrorsHtml(errors3);
                             break;
 
                         default:
@@ -80,10 +88,10 @@ namespace HeaderHTTPproject
                     var resultsHtmlTemplatePath = Path.Combine(env.WebRootPath, "result-page-template.html");
                     var resultsHtmlTemplate = await File.ReadAllTextAsync(resultsHtmlTemplatePath);
 
-                    var finalResultsHtml = resultsHtmlTemplate.Replace("{pageTitle}", "Question 1")
+                    var finalResultsHtml = resultsHtmlTemplate.Replace("{pageTitle}", "Results")
                         .Replace("{resultSummary}", "")
                         .Replace("{resultDetails}", resultsHtml)
-                        .Replace("{errors}", "");
+                        .Replace("{errors}", errorsHtml);
                     await context.Response.WriteAsync(finalResultsHtml);
                 });
 
@@ -91,7 +99,8 @@ namespace HeaderHTTPproject
                 endpoints.MapGet("/question1", async context =>
                 {
                     var urls = BestWebsites.MyNotSensitivePageUrls();
-                    var (serverCounts, errors) = await Calculation.GetServerCounts(urls);
+                    var errors = new List<string>();
+                    var serverCounts = await Calculation.GetServerCounts(urls, errors);
                     var resultsHtml = HtmlGenerator.GenerateResultsHtml(serverCounts, urls.Count);
                     var errorsHtml = HtmlGenerator.GenerateErrorsHtml(errors);
 
@@ -112,7 +121,8 @@ namespace HeaderHTTPproject
                     Console.WriteLine("Question 2");
                     var urls = BestWebsites.DifferentPagesOfTheSameWebsites();
                     Console.WriteLine("urls: " + urls.Count + " urls");
-                    var ages = await Calculation.GetPageAges(urls);
+                    var errors2 = new List<string>();
+                    var ages = await Calculation.GetPageAges(urls, errors2);
                     var averageAge = Calculation.CalculateAverageAge(ages);
                     var standardDeviation = Calculation.CalculateStandardDeviation(ages, averageAge);
                     var resultsHtml = HtmlGenerator.GenerateResultsHtml(averageAge, standardDeviation);
@@ -122,7 +132,7 @@ namespace HeaderHTTPproject
                     var finalResultPage = resultPageTemplate.Replace("{pageTitle}", "Question 2")
                         .Replace("{resultSummary}", resultsHtml)
                         .Replace("{resultDetails}", "")
-                        .Replace("{errors}", "");
+                        .Replace("{errors}", HtmlGenerator.GenerateErrorsHtml(errors2));
 
                     context.Response.ContentType = "text/html";
                     await context.Response.WriteAsync(finalResultPage);
@@ -130,24 +140,17 @@ namespace HeaderHTTPproject
 
                 endpoints.MapGet("/question3", async context =>
                 {
+                    /**
                     var sb = new StringBuilder();
-
                     sb.Append("<h2>Test Scenarios</h2>");
-
-                    sb.Append("<h3>Web servers example</h3>");
                     sb.Append(await ExecuteScenario(TestScenarios.Scenario1));
-
-                    sb.Append("<h3>News journals example</h3>");
                     sb.Append(await ExecuteScenario(TestScenarios.Scenario2));
-
-                    sb.Append("<h3>Big companies example</h3>");
                     sb.Append(await ExecuteScenario(TestScenarios.Scenario3));
-
-                    sb.Append("<h3>Useless websites example</h3>");
                     sb.Append(await ExecuteScenario(TestScenarios.Scenario4));
 
                     context.Response.ContentType = "text/html";
                     await context.Response.WriteAsync(sb.ToString());
+                    */
                 });
             });
             

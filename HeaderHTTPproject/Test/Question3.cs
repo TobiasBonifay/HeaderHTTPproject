@@ -5,30 +5,30 @@ namespace HeaderHTTPproject;
 
 public class TestScenarios
 {
-    public static async Task<string> Scenario1()
+    public static async Task<(string, List<string>)> Scenario1()
     {
         return await RunTestScenario("Web servers example", BestWebsites.WebServers(), new StringBuilder());
     }
 
-    public static async Task<string> Scenario2()
+    public static async Task<(string, List<string>)> Scenario2()
     {
         return await RunTestScenario("News journals example", BestWebsites.NewsWebsite(), new StringBuilder());
     }
 
-    public static async Task<string> Scenario3()
+    public static async Task<(string, List<string>)> Scenario3()
     {
         return await RunTestScenario("Big companies example", BestWebsites.BigCompanies(), new StringBuilder());
     }
 
-    public static async Task<string> Scenario4()
+    public static async Task<(string, List<string>)> Scenario4()
     {
         return await RunTestScenario("Useless websites example", BestWebsites.UselessWebsites(), new StringBuilder());
     }
 
-    private static async Task<string> RunTestScenario(string scenarioName, List<string> urls, StringBuilder sb)
+    private static async Task<(string, List<string>)> RunTestScenario(string scenarioName, List<string> urls, StringBuilder sb)
     {
         sb.Append("<h3>").Append(scenarioName).Append("</h3>");
-        var headerData = await Calculation.GetImportantHeaderDataOfPages(urls);
+        var (headerData, errors) = await Calculation.GetImportantHeaderDataOfPages(urls);
 
         var ages = headerData.Select(x => x.age).ToList();
         var averageAge = Calculation.CalculateAverageAge(ages);
@@ -44,6 +44,6 @@ public class TestScenarios
         var contentTypeCounts = headerData.GroupBy(x => x.contentType)
             .ToDictionary(x => x.Key, x => x.Count());
         foreach (var (contentType, count) in contentTypeCounts) sb.Append("<p>").Append(contentType).Append(": ").Append(count).Append("</p>").AppendLine();
-        return sb.ToString();
+        return (sb.ToString(), errors);
     }
 }

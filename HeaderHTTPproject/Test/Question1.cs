@@ -2,9 +2,10 @@
 
 public class Question1
 {
-    public static async Task Run(IEnumerable<string> serverUrls)
+    public static async Task Run(List<string> serverUrls)
     {
-        var (serverCounts, errors) = await Calculation.GetServerCounts(serverUrls);
+        var errors = new List<string>();
+        var serverCounts = await Calculation.GetServerCounts(serverUrls, errors);
 
         Console.WriteLine("Server statistics:");
         foreach (var (serverName, count) in serverCounts) Console.WriteLine($"{serverName}: {count}");

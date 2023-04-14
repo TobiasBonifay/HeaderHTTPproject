@@ -2,9 +2,9 @@
 
 public class Question2
 {
-    public static async Task Run(IEnumerable<string> urls)
+    public static async Task Run(List<string> urls)
     {
-        var headerData = await Calculation.GetImportantHeaderDataOfPages(urls);
+        var (headerData, errors) = await Calculation.GetImportantHeaderDataOfPages(urls);
 
         var ages = headerData.Select(x => x.age).ToList();
         var averageAge = Calculation.CalculateAverageAge(ages);
