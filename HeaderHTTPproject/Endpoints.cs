@@ -50,6 +50,13 @@ namespace HeaderHTTPproject
                         case "question3":
                             resultsHtml = Question3.Run(errorAccumulator).Result;
                             break;
+                        
+                        case "yourUrl":
+                            var urls = await HtmlGenerator.GetUrlsFromForm(context);
+                            resultsHtml = await Question1.Run(urls, errorAccumulator);
+                            resultsHtml += await Question2.Run(urls, errorAccumulator);
+                            resultsHtml += await Question3.Run(urls, errorAccumulator);
+                            break;
 
                         default:
                             resultsHtml = "<p>Invalid scenario selected</p>";

@@ -29,7 +29,7 @@ public class HtmlGenerator
         return serverCountsHtml.ToString();
     }
 
-    public static string GenerateErrorsHtml(List<string> errors)
+    private static string GenerateErrorsHtml(List<string> errors)
     {
         var errorsHtml = new StringBuilder();
         if (errors.Count == 0) return "";

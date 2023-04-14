@@ -93,27 +93,36 @@ public class Calculation
      * @param url The URL of the page.
      * @return The age of the page in seconds I guess
      */
-    public static async Task<List<(double age, long contentLength, string contentType)>> GetImportantHeaderDataOfPages(
-        List<string> urls, List<string> errors)
+    public static async Task<List<HeaderData>> GetImportantHeaderDataOfPages(List<string> urls, List<string> errors)
     {
-        var results = new List<(double age, long contentLength, string contentType)>();
+        var results = new List<HeaderData>();
+        using var httpClient = new HttpClient();
+
         foreach (var url in urls)
+        {
             try
             {
-                var age = await GetPageAge(url, errors);
-                if (!age.HasValue) continue;
-
-                var response = await HttpClient.GetAsync(url);
+                var response = await httpClient.GetAsync(url);
                 var contentLength = response.Content.Headers.ContentLength ?? 0;
                 var contentType = response.Content.Headers.ContentType?.MediaType ?? "Unknown";
+                var ageValue = response.Headers.Age.HasValue ? (DateTime.UtcNow - response.Headers.Age.Value).Second : 0;
+                var lastModification = response.Content.Headers.LastModified?.UtcDateTime ?? DateTimeOffset.MinValue;
 
-                results.Add((age.Value, contentLength, contentType));
+                results.Add(new HeaderData
+                {
+                    Url = url,
+                    AgeValue = ageValue,
+                    ContentLength = contentLength,
+                    ContentType = contentType,
+                    LastModification = lastModification
+                });
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error fetching headers for {url}: {ex.Message}");
                 errors.Add($"Error fetching headers for {url}: {ex.Message}");
             }
+        }
 
         return results;
     }

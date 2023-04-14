@@ -7,7 +7,7 @@ public class Question2
         var urls2 = BestWebsites.DifferentPagesOfTheSameWebsites();
         return await Run(urls2, errorAccumulator);
     }
-    private static async Task<string> Run(List<string> urls, List<string> errorAccumulator)
+    public static async Task<string> Run(List<string> urls, List<string> errorAccumulator)
     {
         var ages = new List<double>();
         foreach (var url in urls)

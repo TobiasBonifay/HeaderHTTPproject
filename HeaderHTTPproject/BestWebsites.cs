@@ -66,11 +66,11 @@ public class BestWebsites
     {
         return new List<string>
         {
-            "http://www.google.com/",
-            "http://www.youtube.com/",
-            "http://www.facebook.com/",
+            "https://www.google.com/",
+            "https://www.youtube.com/",
+            "https://www.facebook.com/",
             "https://www.yahoo.com/",
-            "https//www.amazon.com/"
+            "https://www.amazon.com/"
         };
     }
 
