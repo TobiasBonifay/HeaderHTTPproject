@@ -13,7 +13,9 @@ public abstract record BestWebsites
             "http://docs.oracle.com/en/java/javase/19/index.html",
             "http://www.microsoft.com/",
             "http://discord.com/",
-            "http://wikipedia.org"
+            "http://wikipedia.org",
+            "https://www.bbc.com",
+            "https://www.euronews.com/"
         };
     }
 
@@ -55,10 +57,10 @@ public abstract record BestWebsites
         return new List<string>
         {
             "https://www.nytimes.com/",
-            // "https://www.bbc.com/",
-            "https://edition.cnn.com/",
-            "https://www.theguardian.com/",
-            "https://www.latimes.com/"
+            "https://www.foxnews.com/",
+            "https://www.bloomberg.com/",
+            "https://www.reuters.com/",
+            "https://www.euronews.com/",
         };
     }
 

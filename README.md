@@ -70,7 +70,8 @@ To run this test scenario, you can use the following endpoint:
 
 ### Question 2
 
-This scenario focuses on identifying the URLs with the highest and lowest content length values. It calculates the highest and lowest content length values and presents the results in a human-readable format.
+This scenario focuses on identifying the URLs with the highest and lowest content length values OF THE SAME WEBSITE, here wikipedia.
+It calculates the highest and lowest content length values and presents the results in a human-readable format.
 
 The available endpoints for this scenario is:
 `http://localhost:5000/question2`
@@ -78,6 +79,8 @@ The available endpoints for this scenario is:
 ### Question 3
 
 This scenario gives more information about the age of the web pages in the list of URLs. It calculates the average age of the pages, the standard deviation of the ages, and the last modification date for each URL.
+Like the others, the available endpoints for this scenario is: 
+`http://localhost:5000/question3`
 
 ## Additional Test Scenarios
 
