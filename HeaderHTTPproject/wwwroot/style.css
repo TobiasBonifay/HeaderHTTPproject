@@ -51,17 +51,11 @@ a {
     font-weight: bold;
 }
 
-h1 {
+h1, h2, h3 {
     text-align: center;
-    margin-top: 20px;
-}
-
-h2 {
-    text-align: center;
-    margin-top: 20px;
+    margin: 1em 0;
 }
 
 p {
-    margin: 1em;
     display: inline-block;
 }
