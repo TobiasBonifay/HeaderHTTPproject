@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.Extensions.Primitives;
 
 namespace HeaderHTTPproject;
 
@@ -55,6 +56,15 @@ public class HeaderReaderBuilder
 
     public static void AddLastModificationDate(List<string> errors, List<HeaderData> headerData, StringBuilder sb)
     {
+
+        if (headerData.All(x => x.LastModification == DateTimeOffset.MinValue))
+        {
+            sb.Append("<p>No Last-Modified header found</p>");
+            return;
+        }
+        
+        sb.Append("<h4>Last modification date</h4>");
+        
         foreach (var (url, lastModified) in headerData.Select(x => (x.Url, x.LastModification)))
         {
             sb.Append("<p>")
