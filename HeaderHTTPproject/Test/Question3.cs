@@ -5,7 +5,7 @@ namespace HeaderHTTPproject;
 
 public class Question3
 {
-    public static async Task<string?> Run(List<string> errors)
+    public static async Task<string> Run(List<string> errors)
     {
         var sb = new StringBuilder();
         sb.Append("<h2>Test Scenarios</h2>");

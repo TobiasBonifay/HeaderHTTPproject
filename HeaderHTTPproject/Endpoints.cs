@@ -1,10 +1,8 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Primitives;
 
 namespace HeaderHTTPproject
 {
@@ -32,13 +30,12 @@ namespace HeaderHTTPproject
                     context.Response.ContentType = "text/html";
                     await context.Response.SendFileAsync(indexPath);
                 });
-
+                
                 endpoints.MapPost("/analyze", async context =>
                 {
-                    // var urls = await HtmlGenerator.GetUrlsFromForm(context);
                     var scenario = context.Request.Form["scenario"];
 
-                    string? resultsHtml;
+                    string resultsHtml;
                     var errorAccumulator = new List<string>();
                     switch (scenario)
                     {
@@ -59,70 +56,31 @@ namespace HeaderHTTPproject
                             break;
                     }
 
-                    var resultsHtmlTemplatePath = Path.Combine(env.WebRootPath, "result-page-template.html");
-                    var resultsHtmlTemplate = await File.ReadAllTextAsync(resultsHtmlTemplatePath);
-
-                    var finalResultsHtml = resultsHtmlTemplate.Replace("{pageTitle}", "Results")
-                        .Replace("{resultSummary}", "")
-                        .Replace("{resultDetails}", resultsHtml)
-                        .Replace("{errors}", HtmlGenerator.GenerateErrorsHtml(errorAccumulator));
-                    await context.Response.WriteAsync(finalResultsHtml);
+                    await HtmlGenerator.GenerateResultPage(context, env, "Results", resultsHtml, errorAccumulator);
                 });
 
                 
                 endpoints.MapGet("/question1", async context =>
                 {
                     var errors = new List<string>();
-                    
                     var resultsHtml = Question1.Run(errors).Result;
-
-                    var resultPageTemplatePath = Path.Combine(env.WebRootPath, "result-page-template.html");
-                    var resultPageTemplate = await File.ReadAllTextAsync(resultPageTemplatePath);
-
-                    var finalResultPage = resultPageTemplate.Replace("{pageTitle}", "Question 1")
-                        .Replace("{resultSummary}", resultsHtml)
-                        .Replace("{resultDetails}", "")
-                        .Replace("{errors}", HtmlGenerator.GenerateErrorsHtml(errors));
-
-                    context.Response.ContentType = "text/html";
-                    await context.Response.WriteAsync(finalResultPage);
+                    await HtmlGenerator.GenerateResultPage(context, env, "Question 1", resultsHtml, errors);
                 });
 
                 endpoints.MapGet("/question2", async context =>
                 {
-                    var errors2 = new List<string>();
-                    
-                    var resultsHtml = await Question2.Run(errors2);
-
-                    var resultPageTemplatePath = Path.Combine(env.WebRootPath, "result-page-template.html");
-                    var resultPageTemplate = await File.ReadAllTextAsync(resultPageTemplatePath);
-                    var finalResultPage = resultPageTemplate.Replace("{pageTitle}", "Question 2")
-                        .Replace("{resultSummary}", resultsHtml)
-                        .Replace("{resultDetails}", "")
-                        .Replace("{errors}", HtmlGenerator.GenerateErrorsHtml(errors2));
-
-                    context.Response.ContentType = "text/html";
-                    await context.Response.WriteAsync(finalResultPage);
+                    var errors = new List<string>();
+                    var resultsHtml = await Question2.Run(errors);
+                    await HtmlGenerator.GenerateResultPage(context, env, "Question 2", resultsHtml, errors);
                 });
 
                 endpoints.MapGet("/question3", async context =>
                 {
                     var errors = new List<string>();
-
                     var resultsHtml = await Question3.Run(errors);
-                    
-                    var resultPageTemplatePath = Path.Combine(env.WebRootPath, "result-page-template.html");
-                    var resultPageTemplate = await File.ReadAllTextAsync(resultPageTemplatePath);
-                    var finalResultPage = resultPageTemplate.Replace("{pageTitle}", "Question 3")
-                        .Replace("{resultSummary}", "")
-                        .Replace("{resultDetails}", resultsHtml)
-                        .Replace("{errors}", HtmlGenerator.GenerateErrorsHtml(errors));
-
-                    context.Response.ContentType = "text/html";
-                    await context.Response.WriteAsync(finalResultPage);
+                    await HtmlGenerator.GenerateResultPage(context, env, "Question 3", resultsHtml, errors);
                 });
             });
-            
         }
     }
 }
