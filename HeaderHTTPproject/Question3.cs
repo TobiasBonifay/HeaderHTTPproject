@@ -14,6 +14,21 @@ public static class Question3
         sb.Append(await Scenario4(errors));
         return sb.ToString();
     }
+    
+    private static async Task<string> RunTestScenario(string scenarioName, List<string> urls, List<string> errors)
+    {
+        var sb = new StringBuilder();
+        sb.Append("<h3>").Append(scenarioName).Append("</h3>");
+
+        var headerData = await Calculation.GetImportantHeaderDataOfPages(urls, errors);
+
+        HeaderReaderBuilder.AddAges(headerData, sb);
+        HeaderReaderBuilder.AddTotalContentLength(headerData, sb);
+        HeaderReaderBuilder.AddContentType(headerData, sb);
+        HeaderReaderBuilder.AddLastModificationDate(headerData, sb);
+
+        return sb.ToString();
+    }
 
     public static async Task<string?> Run(List<string> urls, List<string> errors)
     {
@@ -39,20 +54,5 @@ public static class Question3
     private static async Task<string> Scenario4(List<string> errors)
     {
         return await RunTestScenario("Useless websites example", BestWebsites.UselessWebsites(), errors);
-    }
-
-    private static async Task<string> RunTestScenario(string scenarioName, List<string> urls, List<string> errors)
-    {
-        var sb = new StringBuilder();
-        sb.Append("<h3>").Append(scenarioName).Append("</h3>");
-
-        var headerData = await Calculation.GetImportantHeaderDataOfPages(urls, errors);
-
-        HeaderReaderBuilder.AddAges(headerData, sb);
-        HeaderReaderBuilder.AddTotalContentLength(headerData, sb);
-        HeaderReaderBuilder.AddContentType(headerData, sb);
-        HeaderReaderBuilder.AddLastModificationDate(headerData, sb);
-
-        return sb.ToString();
     }
 }
