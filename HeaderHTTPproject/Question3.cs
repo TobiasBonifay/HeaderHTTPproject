@@ -51,7 +51,7 @@ public static class Question3
         HeaderReaderBuilder.AddAges(headerData, sb);
         HeaderReaderBuilder.AddTotalContentLength(headerData, sb);
         HeaderReaderBuilder.AddContentType(headerData, sb);
-        HeaderReaderBuilder.AddLastModificationDate(errors, headerData, sb);
+        HeaderReaderBuilder.AddLastModificationDate(headerData, sb);
 
         return sb.ToString();
     }

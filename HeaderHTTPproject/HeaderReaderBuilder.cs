@@ -51,7 +51,7 @@ public static class HeaderReaderBuilder
                 .AppendLine();
     }
 
-    public static void AddLastModificationDate(List<string> errors, List<HeaderData> headerData, StringBuilder sb)
+    public static void AddLastModificationDate(List<HeaderData> headerData, StringBuilder sb)
     {
         if (headerData.All(x => x.LastModification == DateTimeOffset.MinValue))
         {
