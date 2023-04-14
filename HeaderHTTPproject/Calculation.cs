@@ -93,11 +93,10 @@ public class Calculation
      * @param url The URL of the page.
      * @return The age of the page in seconds I guess
      */
-    public static async Task<(List<(double age, long contentLength, string contentType)> results, List<string> errors)> GetImportantHeaderDataOfPages(
-        List<string> urls)
+    public static async Task<List<(double age, long contentLength, string contentType)>> GetImportantHeaderDataOfPages(
+        List<string> urls, List<string> errors)
     {
         var results = new List<(double age, long contentLength, string contentType)>();
-        var errors = new List<string>();
         foreach (var url in urls)
             try
             {
@@ -116,7 +115,7 @@ public class Calculation
                 errors.Add($"Error fetching headers for {url}: {ex.Message}");
             }
 
-        return (results, errors);
+        return results;
     }
 
     /**
@@ -127,6 +126,7 @@ public class Calculation
      */
     public static double CalculateAverageAge(List<double> ages)
     {
+        if (ages.Count == 0) return 0;
         return ages.Sum() / ages.Count;
     }
 
@@ -141,6 +141,8 @@ public class Calculation
      */
     public static double CalculateStandardDeviation(IReadOnlyCollection<double> ages, double averageAge)
     {
+        if (ages.Count == 0) return 0;
+        if (averageAge == 0) return 0;
         var sum = ages.Sum(age => Math.Pow(age - averageAge, 2));
         return Math.Sqrt(sum / ages.Count);
     }
