@@ -1,6 +1,6 @@
 ﻿namespace HeaderHTTPproject;
 
-public class BestWebsites
+public static class BestWebsites
 {
     public static List<string> MyNotSensitivePageUrls()
     {
@@ -82,7 +82,7 @@ public class BestWebsites
             // "https://www.iis.net/",
             // "https://www.nginx.com/",
             // "https://www.lighttpd.net/",
-            "https://gunicorn.org/",
+            "https://gunicorn.org/"
         };
     }
 
@@ -95,7 +95,7 @@ public class BestWebsites
             "https://wikipedia.org/wiki/HTTP/2",
             "https://wikipedia.org/wiki/HTTP_cookie",
             "https://wikipedia.org/wiki/HTTP_referer",
-            "https://wikipedia.org/wiki/HTTP_tunnel",
+            "https://wikipedia.org/wiki/HTTP_tunnel"
         };
     }
 }

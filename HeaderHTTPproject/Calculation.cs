@@ -1,11 +1,8 @@
-﻿using System.Text;
+﻿namespace HeaderHTTPproject;
 
-namespace HeaderHTTPproject;
-
-public class Calculation
+public static class Calculation
 {
-    private static HttpClient HttpClient { get; } = new() { Timeout = TimeSpan.FromSeconds(5) };
-
+    private static readonly HttpClient HttpClient = new() { Timeout = TimeSpan.FromSeconds(5) };
 
     /**
      * @param urls The list of URLs to check.
@@ -14,59 +11,27 @@ public class Calculation
     public static async Task<Dictionary<string, int>> GetServerCounts(List<string> urls, List<string> errors)
     {
         var serverCounts = new Dictionary<string, int>();
-
         foreach (var url in urls)
-            try
-            {
-                var response = await HttpClient.GetAsync(url);
-                var server = response.Headers.Server.ToString();
-                if (string.IsNullOrWhiteSpace(server))
-                {
-                    server = "Unknown";
-                    errors.Add($"No server header for {url}");
-                }
-                if (!serverCounts.ContainsKey(server)) serverCounts[server] = 0;
-                serverCounts[server]++;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error fetching headers for {url}: {ex.Message}");
-                errors.Add($"Error fetching headers for {url}: {ex.Message}");
-            }
+        {
+            var serverName = await GetServerName(url, errors);
+            if (serverCounts.ContainsKey(serverName)) serverCounts[serverName]++;
+            else serverCounts.Add(serverName, 1);
+        }
 
         return serverCounts;
     }
 
-
-    /**
-     * Gets the age of a page. The age is the difference between the current time and the date of the page.
-     * 
-     * @param url The URL of the page.
-     * @return The age of the page in seconds I guess
-     */
-    public static async Task<double?> GetPageAge(string url, List<string> errors)
+    private static async Task<string> GetServerName(string url, List<string> errors)
     {
-        try
+        var response = await HttpClient.GetAsync(url);
+        var serverName = response.Headers.Server?.ToString();
+        if (serverName == null)
         {
-            var response = await HttpClient.GetAsync(url);
-            Console.WriteLine($"Age of {url}: {response.Headers.Age}");
-            if (!response.Headers.Age.HasValue)
-            {
-                Console.WriteLine($"No age header for {url}");
-                errors.Add($"No age header for {url}");
-                return null;
-            }
-            var age = (DateTime.UtcNow - response.Headers.Age.Value).Second;
-            return age;
+            errors.Add($"No server header for {url}");
+            return "Unknown";
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching headers for {url}: {ex.Message}");
-            errors.Add($"Error fetching headers for {url}: {ex.Message}");
-            return null;
-        }
+        return serverName;
     }
-    
 
     /**
      * Gets the age of a page. The age is the difference between the current time and the date of the page.
@@ -74,39 +39,65 @@ public class Calculation
      * @param url The URL of the page.
      * @return The age of the page in seconds I guess
      */
+    public static async Task<double> GetPageAge(string url, List<string> errors)
+    {
+        var response = await HttpClient.GetAsync(url);
+        var ageValue = response.Headers.Age.HasValue
+            ? (DateTime.UtcNow - response.Headers.Age.Value).Second
+            : (int?)null;
+        if (!ageValue.HasValue) errors.Add($"No age header for {url}");
+        return ageValue ?? 0;
+    }
+
     public static async Task<List<HeaderData>> GetImportantHeaderDataOfPages(List<string> urls, List<string> errors)
     {
         var results = new List<HeaderData>();
-        using var httpClient = new HttpClient();
-
-        foreach (var url in urls)
-        {
-            try
-            {
-                var response = await httpClient.GetAsync(url);
-                var contentLength = response.Content.Headers.ContentLength ?? 0;
-                var contentType = response.Content.Headers.ContentType?.MediaType ?? "Unknown";
-                var ageValue = response.Headers.Age.HasValue ? (DateTime.UtcNow - response.Headers.Age.Value).Second : 0;
-                var lastModification = response.Content.Headers.LastModified?.UtcDateTime ?? DateTimeOffset.MinValue;
-
-                results.Add(new HeaderData
-                {
-                    Url = url,
-                    AgeValue = ageValue,
-                    ContentLength = contentLength,
-                    ContentType = contentType,
-                    LastModification = lastModification
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error fetching headers for {url}: {ex.Message}");
-                errors.Add($"Error fetching headers for {url}: {ex.Message}");
-            }
-        }
-
+        foreach (var url in urls) results.Add(await GetImportantHeaderData(url, errors));
         return results;
     }
+
+    private static async Task<HeaderData> GetImportantHeaderData(string url, List<string> errors)
+    {
+        var response = await HttpClient.GetAsync(url);
+
+        var contentLength = response.Content.Headers.ContentLength;
+        var contentType = response.Content.Headers.ContentType?.MediaType;
+        var ageValue = response.Headers.Age.HasValue
+            ? (DateTime.UtcNow - response.Headers.Age.Value).Second
+            : (double?)null;
+
+        DateTimeOffset lastModification = DateTimeOffset.MinValue;
+        if (response.Content.Headers.LastModified != null)
+        {
+            var lastModificationString = response.Content.Headers.LastModified.GetValueOrDefault().UtcDateTime.ToString();
+            if (DateTimeOffset.TryParse(lastModificationString, out DateTimeOffset lastModificationResult))
+            {
+                lastModification = lastModificationResult;
+            }
+            else
+            {
+                errors.Add($"Invalid Last-Modified header for {url}");
+            }
+        }
+        else
+        {
+            errors.Add($"No Last-Modified header for {url}");
+        }
+
+        if (contentLength == null) errors.Add($"No content length header for {url}");
+        if (contentType == null) errors.Add($"No content type header for {url}");
+        if (!ageValue.HasValue) errors.Add($"No age header for {url}");
+
+        return new HeaderData
+        {
+            Url = url ?? "Unknown",
+            AgeValue = ageValue ?? 0,
+            ContentLength = contentLength ?? 0,
+            ContentType = contentType ?? "Unknown",
+            LastModification = lastModification
+        };
+    }
+
 
     /**
      * Calculates the average age of a list of ages.
@@ -117,13 +108,13 @@ public class Calculation
     public static double CalculateAverageAge(List<double> ages)
     {
         if (ages.Count == 0) return 0;
-        return ages.Sum() / ages.Count;
+        return ages.Average();
     }
 
     /**
      * Calculates the standard deviation of a list of ages.
      * Ecart-type = racine carrée de la somme des carrés des écarts à la moyenne divisé par le nombre d'éléments.
-     * 
+     *  
      * @param ages The list of ages.
      * @param averageAge The average age of the list.
      * 
@@ -138,8 +129,8 @@ public class Calculation
     }
 
     /**
-         * Formats a number of bytes into a human-readable string.
-         */
+     * Formats a number of bytes into a human-readable string.
+     */
     public static string FormatBytes(long bytes)
     {
         string[] units = { "bytes", "KB", "MB", "GB" };

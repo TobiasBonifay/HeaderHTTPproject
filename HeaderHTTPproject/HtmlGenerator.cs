@@ -7,7 +7,7 @@ namespace HeaderHTTPproject;
 /**
  * This class is used to generate the HTML for the results page.
  */
-public class HtmlGenerator
+public static class HtmlGenerator
 {
     public static async Task<List<string>> GetUrlsFromForm(HttpContext context)
     {
@@ -17,7 +17,8 @@ public class HtmlGenerator
 
     public static string GenerateResultsHtml(Dictionary<string, int> serverCounts, int totalCount)
     {
-        var serverCountsHtml = new StringBuilder("<h2>Results</h2><table><tr><th>Server</th><th>Count</th><th>Percentage</th></tr>");
+        var serverCountsHtml =
+            new StringBuilder("<h2>Results</h2><table><tr><th>Server</th><th>Count</th><th>Percentage</th></tr>");
         foreach (var (serverName, count) in serverCounts)
         {
             var percentage = count / (double)totalCount * 100;
@@ -25,6 +26,7 @@ public class HtmlGenerator
                                     $"<td>{count}</td>" +
                                     $"<td>{percentage:N2}%</td></tr>");
         }
+
         serverCountsHtml.Append("</table>");
         return serverCountsHtml.ToString();
     }
@@ -41,19 +43,20 @@ public class HtmlGenerator
 
     public static string GenerateResultsHtml(double averageAge, double standardDeviation)
     {
-        return $"<table><tr><th>Average Age</th><th>Standard Deviation</th></tr>" +
+        return "<table><tr><th>Average Age</th><th>Standard Deviation</th></tr>" +
                $"<tr><td>{averageAge:N2} seconds</td>" +
                $"<td>{standardDeviation:N2} seconds</td></tr></table>";
     }
-    
-    public static async Task GenerateResultPage(HttpContext context, IWebHostEnvironment env, string pageTitle, string resultSummary, List<string> errors)
+
+    public static async Task GenerateResultPage(HttpContext context, IWebHostEnvironment env, string pageTitle,
+        string resultSummary, List<string> errors)
     {
         var resultPageTemplatePath = Path.Combine(env.WebRootPath, "result-page-template.html");
         var resultPageTemplate = await File.ReadAllTextAsync(resultPageTemplatePath);
         var finalResultPage = resultPageTemplate
             .Replace("{pageTitle}", pageTitle)
             .Replace("{resultSummary}", resultSummary)
-            .Replace("{errors}", HtmlGenerator.GenerateErrorsHtml(errors));
+            .Replace("{errors}", GenerateErrorsHtml(errors));
 
         context.Response.ContentType = "text/html";
         await context.Response.WriteAsync(finalResultPage);

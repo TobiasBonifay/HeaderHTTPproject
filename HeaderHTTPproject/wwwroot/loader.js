@@ -47,6 +47,9 @@ function handleScenarioChange() {
         urlInputSection.style.display = 'grid';
     } else {
         urlInputSection.style.display = 'none';
-        handleSubmit({ target: form, preventDefault: () => {} });
+        handleSubmit({
+            target: form, preventDefault: () => {
+            }
+        });
     }
 }

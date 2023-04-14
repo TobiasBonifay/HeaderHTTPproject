@@ -6,11 +6,11 @@
 </head>
 <body>
 <h1>Header Analysis Tool</h1>
-<form id="analyze-form" action="analyze" method="post">
-    
+<form action="analyze" id="analyze-form" method="post">
+
     <div id="lookupSection">
         <label for="scenario">Scenario:</label>
-        <select name="scenario" id="scenario" onchange="handleScenarioChange();">
+        <select id="scenario" name="scenario" onchange="handleScenarioChange();">
             <option value="">Select a scenario...</option>
             <option value="question1">Question 1</option>
             <option value="question2">Question 2</option>
@@ -21,8 +21,8 @@
 
     <div id="urlInputSection" style="display: none;">
         <label for="urls">URLs to analyze (separated by commas):</label>
-        <input type="text" name="urls" id="urls">
-        <input type="submit" value="Analyze" onclick="handleSubmit()">
+        <input id="urls" name="urls" type="text">
+        <input onclick="handleSubmit()" type="submit" value="Analyze">
     </div>
 </form>
 <div id="result"></div>
