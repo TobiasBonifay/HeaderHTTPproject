@@ -12,7 +12,9 @@ public static class HtmlGenerator
     public static async Task<List<string>> GetUrlsFromForm(HttpContext context)
     {
         var form = await context.Request.ReadFormAsync();
-        return form.Keys.SelectMany(key => form[key].ToString().Split(',')).ToList();
+        var urls = form.Keys.SelectMany(key => form[key].ToString().Split(',')).ToList();
+        urls.Remove("yourUrl");
+        return urls;
     }
 
     public static string GenerateResultsHtml(Dictionary<string, int> serverCounts, int totalCount)

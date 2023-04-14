@@ -23,15 +23,21 @@ public static class Calculation
 
     private static async Task<string> GetServerName(string url, List<string> errors)
     {
-        var response = await HttpClient.GetAsync(url);
-        var serverName = response.Headers.Server?.ToString();
-        if (serverName == null)
+        try {
+            var response = await HttpClient.GetAsync(url);
+            var serverName = response.Headers.Server?.ToString();
+            if (serverName == null)
+            {
+                errors.Add($"No server header for {url}");
+                return "Unknown";
+            }
+
+            return serverName;
+        } catch (InvalidOperationException e)
         {
-            errors.Add($"No server header for {url}");
+            errors.Add($"Error occurred while trying to get server name for {url}. Error message: {e.Message}");
             return "Unknown";
         }
-
-        return serverName;
     }
 
     /**
@@ -42,12 +48,19 @@ public static class Calculation
      */
     public static async Task<double> GetPageAge(string url, List<string> errors)
     {
-        var response = await HttpClient.GetAsync(url);
-        var ageValue = response.Headers.Age.HasValue
-            ? (DateTime.UtcNow - response.Headers.Age.Value).Second
-            : (int?)null;
-        if (!ageValue.HasValue) errors.Add($"No age header for {url}");
-        return ageValue ?? 0;
+        try
+        {
+            var response = await HttpClient.GetAsync(url);
+            var ageValue = response.Headers.Age.HasValue
+                ? (DateTime.UtcNow - response.Headers.Age.Value).Second
+                : (int?)null;
+            if (!ageValue.HasValue) errors.Add($"No age header for {url}");
+            return ageValue ?? 0;
+        }catch (InvalidOperationException e)
+        {
+            errors.Add($"Error occurred while trying to get server name for {url}. Error message: {e.Message}");
+            return 0;
+        }
     }
 
     public static async Task<List<HeaderData>> GetImportantHeaderDataOfPages(List<string> urls, List<string> errors)
@@ -59,31 +72,39 @@ public static class Calculation
 
     private static async Task<HeaderData> GetImportantHeaderData(string url, List<string> errors)
     {
-        var response = await HttpClient.GetAsync(url);
-
-        var contentLength = response.Content.Headers.ContentLength ?? 0;
-        var contentType = response.Content.Headers.ContentType?.MediaType ?? "Unknown";
-        var ageValue = response.Headers.Age?.TotalSeconds ?? 0.0;
-
-        var lastModified = DateTimeOffset.MinValue;
-        if (response.Content.Headers.LastModified != null)
+        try
         {
-            if (DateTimeOffset.TryParse(response.Content.Headers.LastModified.GetValueOrDefault().ToString(),
-                    out var lastModifiedResult))
-                lastModified = lastModifiedResult;
+            var response = await HttpClient.GetAsync(url);
+
+            var contentLength = response.Content.Headers.ContentLength ?? 0;
+            var contentType = response.Content.Headers.ContentType?.MediaType ?? "Unknown";
+            var ageValue = response.Headers.Age?.TotalSeconds ?? 0.0;
+
+            var lastModified = DateTimeOffset.MinValue;
+            if (response.Content.Headers.LastModified != null)
+            {
+                if (DateTimeOffset.TryParse(response.Content.Headers.LastModified.GetValueOrDefault().ToString(),
+                        out var lastModifiedResult))
+                    lastModified = lastModifiedResult;
+                else
+                    errors.Add($"Invalid Last-Modified header for {url}");
+            }
             else
-                errors.Add($"Invalid Last-Modified header for {url}");
-        }
-        else
+            {
+                errors.Add($"No Last-Modified header for {url}");
+            }
+            
+            if (contentLength == 0L) errors.Add($"No content length header for {url}");
+            if (contentType == "Unknown") errors.Add($"No content type header for {url}");
+            if (ageValue == 0.0) errors.Add($"No age header for {url}");
+
+            return new HeaderData(url, ageValue, contentLength, contentType, lastModified);
+            
+        } catch (InvalidOperationException e)
         {
-            errors.Add($"No Last-Modified header for {url}");
+            errors.Add($"Error occurred while trying to get server name for {url}. Error message: {e.Message}");
+            return new HeaderData(url, 0, 0, "Unknown", DateTimeOffset.MinValue);
         }
-
-        if (contentLength == 0L) errors.Add($"No content length header for {url}");
-        if (contentType == "Unknown") errors.Add($"No content type header for {url}");
-        if (ageValue == 0.0) errors.Add($"No age header for {url}");
-
-        return new HeaderData(url, ageValue, contentLength, contentType, lastModified);
     }
 
 
