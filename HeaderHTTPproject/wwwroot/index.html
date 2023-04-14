@@ -20,25 +20,6 @@
 </form>
 <div id="result"></div>
 
-<script>
-    const form = document.getElementById('analyze-form');
-    const resultDiv = document.getElementById('result');
-
-    form.addEventListener('submit', async event => {
-        event.preventDefault();
-
-        const formData = new FormData(event.target);
-
-        resultDiv.innerHTML = 'Loading...';
-
-        const response = await fetch(event.target.action, {
-            method: event.target.method,
-            body: formData
-        });
-
-        resultDiv.innerHTML = await response.text();
-    });
-</script>
-
+<script src="loader.js"></script>
 </body>
 </html>
