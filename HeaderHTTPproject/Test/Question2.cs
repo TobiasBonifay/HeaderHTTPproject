@@ -2,15 +2,22 @@
 
 public class Question2
 {
-    public static async Task Run(List<string> urls)
+    public static async Task<string?> Run(List<string> errorAccumulator)
     {
-        var errors = new List<string>();
-        var headerData = await Calculation.GetImportantHeaderDataOfPages(urls, errors);
-        var ages = headerData.Select(x => x.age).ToList();
+        var urls2 = BestWebsites.DifferentPagesOfTheSameWebsites();
+        return await Run(urls2, errorAccumulator);
+    }
+    private static async Task<string?> Run(List<string> urls, List<string> errorAccumulator)
+    {
+        var ages = new List<double>();
+        foreach (var url in urls)
+        {
+            var age = await Calculation.GetPageAge(url, errorAccumulator);
+            if (age.HasValue) ages.Add(age.Value);
+            else errorAccumulator.Add("No age found for " + url + ",");
+        }
         var averageAge = Calculation.CalculateAverageAge(ages);
         var standardDeviation = Calculation.CalculateStandardDeviation(ages, averageAge);
-
-        Console.WriteLine($"\nAverage age: {averageAge} seconds");
-        Console.WriteLine($"Standard deviation: {standardDeviation} seconds");
+        return HtmlGenerator.GenerateResultsHtml(averageAge, standardDeviation);
     }
 }

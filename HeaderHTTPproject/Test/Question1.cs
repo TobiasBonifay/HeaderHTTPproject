@@ -2,18 +2,14 @@
 
 public class Question1
 {
-    public static async Task Run(List<string> serverUrls)
+    public static async Task<string?> Run(List<string> errorAccumulator)
     {
-        var errors = new List<string>();
-        var serverCounts = await Calculation.GetServerCounts(serverUrls, errors);
-
-        Console.WriteLine("Server statistics:");
-        foreach (var (serverName, count) in serverCounts) Console.WriteLine($"{serverName}: {count}");
-
-        if (errors.Count > 0)
-        {
-            Console.WriteLine("\nErrors:");
-            foreach (var error in errors) Console.WriteLine(error);
-        }
+        var urls = BestWebsites.MyNotSensitivePageUrls();
+        return await Run(urls, errorAccumulator);
+    }
+    private static async Task<string?> Run(List<string> urls, List<string> errorAccumulator)
+    {
+        var serverCounts = await Calculation.GetServerCounts(urls, errorAccumulator);
+        return HtmlGenerator.GenerateResultsHtml(serverCounts, urls.Count);
     }
 }
