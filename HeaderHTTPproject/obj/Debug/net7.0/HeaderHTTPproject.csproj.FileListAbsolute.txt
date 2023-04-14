@@ -1,7 +1,6 @@
 C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\testhost.dll
 C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\testhost.exe
 C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\wwwroot\index.html
-C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\wwwroot\results.html
 C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\wwwroot\style.css
 C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\HeaderHTTPproject.exe
 C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\HeaderHTTPproject.deps.json

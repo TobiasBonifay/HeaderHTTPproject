@@ -2,10 +2,11 @@
 <html>
 <head>
     <title>Header Analysis Tool</title>
+    <link href="style.css" rel="stylesheet"/>
 </head>
 <body>
 <h1>Header Analysis Tool</h1>
-<form action="analyze" method="post">
+<form id="analyze-form" action="analyze" method="post">
     <!-- 
     <label for="urls">URLs to analyze (separated by commas):</label>
     <input type="text" name="urls" id="urls"><br><br> -->
@@ -17,5 +18,27 @@
     </select><br><br>
     <input type="submit" value="Analyze">
 </form>
+<div id="result"></div>
+
+<script>
+    const form = document.getElementById('analyze-form');
+    const resultDiv = document.getElementById('result');
+
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+
+        resultDiv.innerHTML = 'Loading...';
+
+        const response = await fetch(event.target.action, {
+            method: event.target.method,
+            body: formData
+        });
+
+        resultDiv.innerHTML = await response.text();
+    });
+</script>
+
 </body>
 </html>

@@ -15,6 +15,23 @@ table {
     margin: 1em auto auto;
 }
 
+form {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+    margin: 1em 0;
+}
+
+#result {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 1em 0;
+}
+
 th, td {
     border: 1px solid #ccc;
     padding: 8px;

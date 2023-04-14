@@ -64,8 +64,8 @@ namespace HeaderHTTPproject
 
                         case "question3":
                             var sb = new StringBuilder();
-                            sb.Append("<h1>Test Scenarios</h1>");
-                            sb.Append(await ExecuteScenario(TestScenarios.Scenario1));
+                            sb.Append("<h2>Test Scenarios</h2>");
+                            // sb.Append(await ExecuteScenario(TestScenarios.Scenario1));
                             sb.Append(await ExecuteScenario(TestScenarios.Scenario2));
                             sb.Append(await ExecuteScenario(TestScenarios.Scenario3));
                             sb.Append(await ExecuteScenario(TestScenarios.Scenario4));
@@ -132,18 +132,18 @@ namespace HeaderHTTPproject
                 {
                     var sb = new StringBuilder();
 
-                    sb.Append("<h1>Test Scenarios</h1>");
+                    sb.Append("<h2>Test Scenarios</h2>");
 
-                    sb.Append("<h2>Web servers example</h2>");
+                    sb.Append("<h3>Web servers example</h3>");
                     sb.Append(await ExecuteScenario(TestScenarios.Scenario1));
 
-                    sb.Append("<h2>News journals example</h2>");
+                    sb.Append("<h3>News journals example</h3>");
                     sb.Append(await ExecuteScenario(TestScenarios.Scenario2));
 
-                    sb.Append("<h2>Big companies example</h2>");
+                    sb.Append("<h3>Big companies example</h3>");
                     sb.Append(await ExecuteScenario(TestScenarios.Scenario3));
 
-                    sb.Append("<h2>Useless websites example</h2>");
+                    sb.Append("<h3>Useless websites example</h3>");
                     sb.Append(await ExecuteScenario(TestScenarios.Scenario4));
 
                     context.Response.ContentType = "text/html";
