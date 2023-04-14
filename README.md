@@ -82,18 +82,37 @@ This scenario gives more information about the age of the web pages in the list 
 Like the others, the available endpoints for this scenario is: 
 `http://localhost:5000/question3`
 
-## Additional Test Scenarios
+## Additional Test Scenarios for Question 3
 
-This application includes three additional test scenarios that showcase various statistics and insights that can be derived from analyzing HTTP headers. These test scenarios are designed to demonstrate the flexibility and creativity of the application in processing and analyzing header data. Even though these test may be not be as useful as expected by the teacher, they are still interesting to see.
+This application includes fourth additional test scenarios that showcase various statistics and insights that can be derived from analyzing HTTP headers. These test scenarios are designed to demonstrate the flexibility and creativity of the application in processing and analyzing header data. Even though these test may be not be as useful as expected by the teacher, they are still interesting to see.
 
 ### Test Scenario 1
 
+The storage / archives repository websites are not updated frequently and contains way less content in their content. The deviation is also lower than the other websites.
+<br>
+-> We can see that the Last Modified date is old. 
+-> The average size is also very low.
 
 ### Test Scenario 2
 
 The news websites are updated frequently and contains way more content in their content. The deviation is also higher than the other websites.
+<br>
+-> We can see that the Last Modified date is not old.
 
 ### Test Scenario 3
 
+The big companies must have an extremely low deviation, the average age is also very low, because they are updated very frequently.
+AND the page should be very light, because they optimize their websites to be as fast as possible.
+<br>
+-> We can see that no website shares the Last Modified date in the header.
+
+### Test Scenario 4
+
+Some useless websites to show the opposite. Old and heavy websites (heavy is relative... I mean... we only get the html content).
+<br>
+-> Heavy & Old
 
 
+## Built With A LOT OF COFFEE
+Hope you enjoy it!
+### Have a nice day! : )

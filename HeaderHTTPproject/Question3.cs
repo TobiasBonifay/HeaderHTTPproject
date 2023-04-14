@@ -38,7 +38,7 @@ public static class Question3
 
     private static async Task<string> Scenario1(List<string> errors)
     {
-        return await RunTestScenario("Web servers example", BestWebsites.WebServers(), errors);
+        return await RunTestScenario("Archives example", BestWebsites.ArchivesServer(), errors);
     }
 
     private static async Task<string> Scenario2(List<string> errors)

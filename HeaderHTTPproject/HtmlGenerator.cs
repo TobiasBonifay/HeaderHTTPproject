@@ -37,7 +37,7 @@ public static class HtmlGenerator
     {
         var errorsHtml = new StringBuilder();
         if (errors.Count == 0) return "";
-        errorsHtml.Append("<h2>Errors</h2><ul>");
+        errorsHtml.Append("<h2>Warnings</h2><ul>");
         foreach (var error in errors) errorsHtml.Append($"<li>{error}</li>");
         errorsHtml.Append("</ul>");
         return errorsHtml.ToString();

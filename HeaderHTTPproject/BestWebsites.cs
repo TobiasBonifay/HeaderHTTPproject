@@ -32,31 +32,12 @@ public abstract record BestWebsites
     {
         return new List<string>
         {
-            // "http://www.koalastothemax.com/",
-            // "http://www.therestartpage.com/",
-            // "https://scatter.wordpress.com/2010/05/30/the-shortest-possible-game-of-monopoly-21-seconds/",
             "https://paint.toys/",
-            // "https://remoji.com/",
             "https://www.wikihow.com/Recycle-Your-Socks",
-            // "https://www.rrrgggbbb.com/",
-            // "https://www.patience-is-a-virtue.org/",
-            // "https://www.ouaismaisbon.ch/",
-            "http://alwaysjudgeabookbyitscover.com/",
-            // "https://garfieldminusgarfield.net/",
-            // "https://www.pointerpointer.com/",
-            // "https://www.ismycomputeron.com/",
-            // "https://www.nullingthevoid.com/",
-            // "https://www.muchbetterthanthis.com/",
-            // "https://www.yesnoif.com/",
-            // "https://iamawesome.com/",
+            "https://alwaysjudgeabookbyitscover.com/",
             "https://www.spaghettimonster.org/",
-            // "https://www.pleaselike.com/",
-            // "https://crouton.net/",
-            // "https://corgiorgy.com/",
-            // "https://www.wutdafuk.com/",
-            // "https://unicodesnowmanforyou.com/",
-            // "https://www.crossdivisions.com/",
-            "https://trypap.com/"
+            "https://trypap.com/",
+            "https://techcrunch.com/"
         };
     }
 
@@ -95,15 +76,13 @@ public abstract record BestWebsites
     /**
      * The following websites are used to test the question 3.
      */
-    public static List<string> WebServers()
+    public static List<string> ArchivesServer()
     {
         return new List<string>
         {
-            "http://httpd.apache.org/",
-            // "https://www.iis.net/",
-            // "https://www.nginx.com/",
-            // "https://www.lighttpd.net/",
-            "https://gunicorn.org/"
+            "https://repo1.maven.org/maven2/org/springframework/boot/spring-boot-starter/1.0.0.RELEASE/spring-boot-starter-1.0.0.RELEASE.pom",
+            "https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.1.0-beta0/slf4j-api-1.1.0-beta0.pom",
+            "https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-s3/1.9.0/aws-java-sdk-s3-1.9.0.pom"
         };
     }
 
