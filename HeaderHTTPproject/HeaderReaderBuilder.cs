@@ -63,15 +63,8 @@ public static class HeaderReaderBuilder
 
         foreach (var (url, lastModified) in headerData.Select(x => (x.Url, x.LastModification)))
         {
-            sb.Append("<p>")
-                .Append(url)
-                .Append(": ");
-
-            if (lastModified != DateTimeOffset.MinValue) sb.Append(lastModified);
-            else errors.Add($"Error fetching Last modification date for {url}: No Last-Modified header");
-
-            sb.Append("</p>")
-                .AppendLine();
+            if (lastModified == DateTimeOffset.MinValue) continue;
+            sb.Append("<p>").Append(url).Append(": ").Append(lastModified).Append("</p>").AppendLine();
         }
     }
 }

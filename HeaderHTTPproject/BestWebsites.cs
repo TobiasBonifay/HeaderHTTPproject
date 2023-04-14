@@ -1,6 +1,6 @@
 ﻿namespace HeaderHTTPproject;
 
-public static class BestWebsites
+public abstract record BestWebsites
 {
     public static List<string> MyNotSensitivePageUrls()
     {

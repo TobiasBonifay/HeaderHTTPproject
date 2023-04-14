@@ -61,19 +61,16 @@ public static class Calculation
     {
         var response = await HttpClient.GetAsync(url);
 
-        var contentLength = response.Content.Headers.ContentLength;
-        var contentType = response.Content.Headers.ContentType?.MediaType;
-        var ageValue = response.Headers.Age.HasValue
-            ? (DateTime.UtcNow - response.Headers.Age.Value).Second
-            : (double?)null;
+        var contentLength = response.Content.Headers.ContentLength ?? 0;
+        var contentType = response.Content.Headers.ContentType?.MediaType ?? "Unknown";
+        var ageValue = response.Headers.Age?.TotalSeconds ?? 0.0;
 
-        var lastModification = DateTimeOffset.MinValue;
+        var lastModified = DateTimeOffset.MinValue;
         if (response.Content.Headers.LastModified != null)
         {
-            var lastModificationString =
-                response.Content.Headers.LastModified.GetValueOrDefault().UtcDateTime.ToString();
-            if (DateTimeOffset.TryParse(lastModificationString, out var lastModificationResult))
-                lastModification = lastModificationResult;
+            if (DateTimeOffset.TryParse(response.Content.Headers.LastModified.GetValueOrDefault().ToString(),
+                    out var lastModifiedResult))
+                lastModified = lastModifiedResult;
             else
                 errors.Add($"Invalid Last-Modified header for {url}");
         }
@@ -82,18 +79,11 @@ public static class Calculation
             errors.Add($"No Last-Modified header for {url}");
         }
 
-        if (contentLength == null) errors.Add($"No content length header for {url}");
-        if (contentType == null) errors.Add($"No content type header for {url}");
-        if (!ageValue.HasValue) errors.Add($"No age header for {url}");
+        if (contentLength == 0L) errors.Add($"No content length header for {url}");
+        if (contentType == "Unknown") errors.Add($"No content type header for {url}");
+        if (ageValue == 0.0) errors.Add($"No age header for {url}");
 
-        return new HeaderData
-        {
-            Url = url ?? "Unknown",
-            AgeValue = ageValue ?? 0,
-            ContentLength = contentLength ?? 0,
-            ContentType = contentType ?? "Unknown",
-            LastModification = lastModification
-        };
+        return new HeaderData(url, ageValue, contentLength, contentType, lastModified);
     }
 
 

@@ -26,10 +26,6 @@ C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\De
 C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\System.Configuration.ConfigurationManager.dll
 C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\System.Security.Permissions.dll
-C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\xunit.abstractions.dll
-C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\xunit.assert.dll
-C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\xunit.core.dll
-C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\xunit.execution.dotnet.dll
 C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\cs\Microsoft.TestPlatform.CoreUtilities.resources.dll
 C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\cs\Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll
 C:\Users\Tobias Bonifay\RiderProjects\HeaderHTTPproject\HeaderHTTPproject\bin\Debug\net7.0\de\Microsoft.TestPlatform.CoreUtilities.resources.dll
