@@ -21,6 +21,10 @@ git clone https://github.com/TobiasBonifay/HeaderHTTPproject.git
 ```bash
 cd HeaderHTTPproject
 ```
+You may need to cd two times depending of your current location /!\
+```bash
+cd HeaderHTTPproject
+```
 
 3. Run the application
 ```bash
